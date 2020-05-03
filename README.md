@@ -4,20 +4,20 @@
 ## Bedienung
 
 ```
-python ecli.py <ECLI>
+python parse_ecli.py <ECLI>
 ```
 Der ECLI muss vollständig eingegeben werden. Führende Leerzeichen und Sonderzeichen werden entfernt.
 
 Optional:
 
 ```
-python ecli.py -r
+python parse_ecli.py -r
 ```
 für rawmode, d.h. die Daten werden ohne Beschriftung nur durch Semikolon getrennt ausgegeben.
 
 ```
-python ecli.py -i input_file
-python ecli.py -o output_file
+python parse_ecli.py -i input_file
+python parse_ecli.py -o output_file
 
 ```
 ECLI können auch aus einer Textdatei eingelesen werden, die mit `-i` angegeben wird. Ein ECLI pro Zeile. Zeilen, die nicht mit `ECLI:DE:` beginnen, werden ignoriert.
