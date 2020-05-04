@@ -82,26 +82,26 @@ Die Analyse erfolgt zweistufig. In einem ersten Zugriff wird der ECLI mit den Mu
 
 Die ECLI des BPatG werden wie folgt gebildet:
 > 1. ECLI
-2. DE (= Ländercode)
-3. BPatG (= Gericht, das die Entscheidung erlassen hat)
-4. Jahr der Entscheidung
-5. Ordinalzahl (= bis zu 25 alphanumerische Zeichen inklusive Punkte).
+> 2. DE (= Ländercode)
+> 3. BPatG (= Gericht, das die Entscheidung erlassen hat)
+> 4. Jahr der Entscheidung
+> 5. Ordinalzahl (= bis zu 25 alphanumerische Zeichen inklusive Punkte).
 
 > Die Ordinalzahl soll wie folgt aufgebaut sein:
 
-Stellen|Beschreibung|Mögliche Werte
----|---|---
-1-6|Verkündungs-Datum
-Zustellungs-Datum (bei Zustellung an Verkündungs Statt)|TTMMJJ
-7|Entscheidungstyp|B (Beschluss) U (Urteil)
-8-9|Spruchkörper|1….36
-10-14|Registerzeichen gemäß § 3 I AktOBPatG vom 11.05.2010 (runde Klammern entfallen)|Wpat Ni Li LiQ LiR ZApat ARpat
-15-17|Laufende Nummer|0….999
-18|Trennzeichen (Punkt)|.
-19-20|Jahreszahl|abschließende zwei Stellen des Jahres
-21-22|Suffix Gemäß § 3 II AktOBPatG vom 11.05.2010 (runde Klammern entfallen)|EP EU
-23|Trennzeichen (Punkt)|.
-24-25|Kollisionsziffer (stets)
+> Stellen|Beschreibung|Mögliche Werte
+> ---|---|---
+> 1-6|Verkündungs-Datum
+> Zustellungs-Datum (bei Zustellung an Verkündungs Statt)|TTMMJJ
+> 7|Entscheidungstyp|B (Beschluss) U (Urteil)
+> 8-9|Spruchkörper|1…36
+> 10-14|Registerzeichen gemäß § 3 I AktOBPatG vom 11.05.2010 (runde Klammern entfallen)|Wpat Ni Li LiQ LiR ZApat ARpat
+> 15-17|Laufende Nummer|0…999
+> 18|Trennzeichen (Punkt)|.
+> 19-20|Jahreszahl|abschließende zwei Stellen des Jahres
+> 21-22|Suffix Gemäß § 3 II AktOBPatG vom 11.05.2010 (runde Klammern entfallen)|EP EU
+> 23|Trennzeichen (Punkt)|.
+> 24-25|Kollisionsziffer (stets)
 
 ## Module
 Name|Funktion
