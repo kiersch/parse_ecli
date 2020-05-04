@@ -97,6 +97,7 @@ test_ecli_strings_fail = [
 "ECLI:DE:VGBAYRE:2005:", # ECLI zu kurz
 "ECLI:FR:OLGHAM:2020:0319.4RVS25.20.00", # Beginnt nicht mit ECLI:DE:
 "ECLI:DE:SUPREMEC:2016:180216URISTR1.15.0", # Ungültiges Gericht beim BGH Schema
+"ECLI:DE:BGH:2020:180320IXZA4.20.0", # Entscheidungstyp (UBVS) fehlt
 "ECLI:DE:BGH:201:180216URISTR1.15.0", # Unvollständige Jahreszahl
 "ECLI:DE:BGH:1899:180216URISTR1.15.0", # Ungültige Jahreszahl (vor 1900)
 "ECLI:DE:OLGK:2020:205.5W1.20.00",  # Unvollständiges Entscheidungsdatum
@@ -172,6 +173,10 @@ test_court_data_bgh = [
     ("ECLI:DE:BGH:2020:200220UIZR176.18.0", ("BGH", "20.02.2020", "I ZR 176/18", "0", "Urteil", "Revisionen, Beschwerden gegen die Nichtzulassung der Revision, Anträge auf Zulassung der Sprungrevision, Berufungen in Patentsachen")),
 ]
 
+test_court_data_bgh_fail = [
+"ECLI:DE:BGH:2020:200220UIUR176.18.0", # Ungültiges Registerzeichen BGH
+]
+
 
 @pytest.mark.parametrize("bgh_input, expected", test_court_data_bgh)
 def test_bgh_parse_1(bgh_input, expected):
@@ -184,6 +189,17 @@ def test_bgh_parse_1(bgh_input, expected):
     assert bgh.court_data["collision"][1] == expected[3]
     assert bgh.court_data["decisiontype"][1] == expected[4]
     assert bgh.court_data["decision_explain"][1] == expected[5]
+
+
+@pytest.mark.parametrize("test_court_data_bgh_fail", test_court_data_bgh_fail)
+def test_bgh_fail(test_court_data_bgh_fail):
+    bgh = ecli_classes.Decision_BGH(test_court_data_bgh_fail)
+    match = re.match(pattern.bgh_compiled, test_court_data_bgh_fail)
+
+    with pytest.raises((KeyError, ecli_classes.InValidAZError)):
+        bgh.parse_ecli(match)
+
+
 
 ##########
 # BPatG
@@ -231,6 +247,9 @@ test_court_data_laender = [
     ("ECLI:DE:LGAC:2019:1011.60KLS806JS589.16.00", ("Landgericht Aachen", "11.10.2019", "60 KLs 806 Js 589/16", "00", "Erstinstanzliche Sachen der großen Strafkammer/Jugendkammer (§ 74 Abs. 1 GVG, § 41 JGG)", "")),
     ("ECLI:DE:AGBAYRE:2016:1109.2M2168.16.0A", ("Amtsgericht Bayreuth", "09.11.2016", "2 M 2168/16", "0A", "Zwangsvollstreckungssachen", "")),
     ("ECLI:DE:AGBAYRE:2016:0622.105C1568.15WEG.0A", ("Amtsgericht Bayreuth", "22.06.2016", "105 C 1568/15 WEG", "0A", "Erstinstanzliche Zivilprozesse", "")),
+    ("ECLI:DE:FGHH:2020:0220.2K293.15.00", ("Finanzgericht Hamburg", "20.02.2020", "2 K 293/15", "00", "", "Klagen")),
+    ("ECLI:DE:OLGKOBL:2017:0706.9UF108.17.00", ("Oberlandesgericht Koblenz", "06.07.2017", "9 UF 108/17", "00", "Beschwerden in Familiensachen des Rechtspflegers (§ 3 RpflG) sowie gegen andere als Endentscheidungen (§ 39a AktO)", "")),
+
     #("ECLI:DE:LGMAGDE:2019:0312.28QS39.19.00", ("Landgericht Magdeburg", "13.12.2019", "28 Qs 39/19", "00", "Beschwerden in Strafsachen und Bußgeldsachen (§ 73 GVG)", "")),
 ]
 
