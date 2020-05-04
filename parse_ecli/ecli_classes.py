@@ -323,7 +323,7 @@ class Decision_Other(Decision):
             azregister = super().check_azpart_empty(az_match.group("azregister"))
             azer = super().check_azpart_empty(az_match.group("azer"))
             az = (az_match.group("azinstance") + " " + az_match.group("azbody") + " " + az_match.group("azreg")
-                    + " " + az_match.group("aznumber").lstrip("0") + "/" + az_match.group("azyear") + " " + azregister + " " + azer)
+                    + " " + az_match.group("aznumber").lstrip("0") + "/" + az_match.group("azyear") + " " + azregister + " " + azer).strip()
             decision_explain = self.loaded_data["sozg_explain"][az_match.group("azreg")]
             return az.rstrip(), decision_explain
         else:
@@ -332,7 +332,7 @@ class Decision_Other(Decision):
     def parse_ecli_az_arbg(self, match):
         if az_match := re.match(pattern.arbg_az, match.group("az"), flags=re.VERBOSE):
             az = (az_match.group("azbody") + " " + self.loaded_data["arbg_az"][az_match.group("azreg")]
-                    + " " + az_match.group("aznumber").lstrip("0") + "/" + az_match.group("azyear"))
+                    + " " + az_match.group("aznumber").lstrip("0") + "/" + az_match.group("azyear")).strip()
             decision_explain = self.loaded_data["arbg_explain"][az_match.group("azreg")]
             return az, decision_explain
         else:
@@ -374,7 +374,7 @@ class Decision_Other(Decision):
             if azprefix != '':
                 azprefix = azprefix + " "
             az = (azprefix + az_match.group("azbody") + " " + az_match.group("azreg") + " "
-                    + az_match.group("aznumber").lstrip("0") + "/" + az_match.group("azyear") + azhessen + azregister)
+                    + az_match.group("aznumber").lstrip("0") + "/" + az_match.group("azyear") + azhessen + azregister).strip()
             if az_match.group("azreg") in self.loaded_data["verwg_explain"]:
                 decisiontype = self.loaded_data["verwg_explain"][az_match.group("azreg")]
             else:
@@ -392,7 +392,7 @@ class Decision_Other(Decision):
                 azregister = "." + azregister
                 decision_explain = self.loaded_data["verwg_register_explain"][az_match.group("azregister")]
             az = (az_match.group("azbayern") + " " + az_match.group("azbody") + " " + az_match.group("azreg")
-                    + " " + az_match.group("azyear") + "." + az_match.group("aznumber") + azregister)
+                    + " " + az_match.group("azyear") + "." + az_match.group("aznumber") + azregister).strip()
             if az_match.group("azreg") in self.loaded_data["verwg_explain"]:
                 decisiontype = self.loaded_data["verwg_explain"][az_match.group("azreg")]
             else:
@@ -408,7 +408,7 @@ class Decision_Other(Decision):
         if az_match := re.match(pattern.fg_az, match.group("az"), flags=re.VERBOSE):
             azregister = super().check_azpart_empty(az_match.group("azregister"))
             az = (az_match.group("azbody") + " " + az_match.group("azreg") + " " + az_match.group("aznumber").lstrip("0") + "/"
-                    + az_match.group("azyear") + " " +azregister.replace(".",", "))
+                    + az_match.group("azyear") + " " +azregister.replace(".",", ")).strip()
             if az_match.group("azreg") in self.loaded_data["fg_explain"]:
                 decisiontype = self.loaded_data["fg_explain"][az_match.group("azreg")]
             else:
@@ -416,6 +416,7 @@ class Decision_Other(Decision):
             return az, decision_explain, decisiontype
         else:
             raise InValidAZError(f"Ungültiges Aktenzeichen!: {match.group('az')}")
+
     def parse_ecli(self, match):
         self.valid_court(match)
         self.court_data["court"][1] = self.court_names[match.group("court")]
