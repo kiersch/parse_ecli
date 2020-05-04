@@ -15,11 +15,11 @@ from pathlib import Path
 # (positional argument)
 parser = argparse.ArgumentParser(description='Analyse von deutschen ECLI')
 (parser.add_argument('-i', '--input', dest='input_file',
-                        help='Angabe einer Datei mit ECLI. Zeilen, die nicht mit ECLI:DE: beginnen, werden ignoriert.'))
+                    help='Angabe einer Datei mit ECLI. Zeilen, die nicht mit ECLI:DE: beginnen, werden ignoriert.'))
 (parser.add_argument('-o', '--output', dest='output_file',
-                        help='Angabe einer Datei, in welche die Ausgabe geschrieben werden soll. Erzeugt mit -r eine .csv'))
+                    help='Angabe einer Datei, in welche die Ausgabe geschrieben werden soll. Erzeugt mit -r eine .csv'))
 (parser.add_argument('-r', '--raw', action='store_true',
-                        help='Ausgabe der analysierten Bestandteile ohne weitere Beschriftung, durch Semikolon getrennt'))
+                    help='Ausgabe der analysierten Bestandteile ohne weitere Beschriftung, durch Semikolon getrennt'))
 args, args2 = parser.parse_known_args()
 
 ecli_list = []
@@ -58,9 +58,17 @@ else:
             my_decision, my_match = ecli_classes.match_ecli(ecli_string)
             my_decision.parse_ecli(my_match)
             if args.output_file is not None:
-                with open(args.output_file, mode="a", encoding="utf-8") as f:
-                    my_decision.print_decision(args.raw, f)
+                output_file_string = Path(args.output_file)
+                if output_file_string.exists():
+                    print()
+                    overwrite = input(f"Datei {output_file_string} existiert bereits. Überschreiben? (j/n)\n")
+                    if overwrite.lower() == 'j':
+                        with open(args.output_file, mode="w", encoding="utf-8") as f:
+                            my_decision.output_decision(args.raw, f)
+                else:
+                    with open(args.output_file, mode="w", encoding="utf-8") as f:
+                            my_decision.output_decision(args.raw, f)
             else:
-                my_decision.print_decision(args.raw)
+                my_decision.output_decision(args.raw)
         except (ecli_classes.NoValidECLIError, ecli_classes.InValidAZError, ecli_classes.InValidCourtError) as e:
             exception_print(e)

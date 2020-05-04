@@ -64,18 +64,18 @@ class Decision:
             # Diese Daten sollen mithilfe des ECLI aufgefüllt werden.
             # Nicht alle werden von allen Entscheidungstypen genutzt
 
-            "court" : ["Gericht: ",""],
-            "bodytype" : ["Spruchkörper: ",""],
-            "date" : ["Entscheidungsdatum: ",""],
-            "az" : ["Aktenzeichen (max. 17 Stellen): ",""],
-            "collision" : ["Kollisionsnummer: ",""],
-            "year" : ["Jahr: ",""],
-            "decisiontype" : ["Entscheidungsart: ",""], # Urteil, Beschluss...
-            "decision_explain" : ["Verfahren: ",""], # Erklärt das Registerzeichen (C, O, KLs...)
-            "register_explain" : ["Register/Zusatz: ",""], # Erklärt das ZUSATZregister bei manchen Az (Z.B. R in "B 14 AS 3/18 R")
-            "url" : ["Link: ",""], # Manche Gerichte bieten eine aus dem ECLI ableitbare Kurz-URl
+            "court": ["Gericht: ",""],
+            "bodytype": ["Spruchkörper: ",""],
+            "date": ["Entscheidungsdatum: ",""],
+            "az": ["Aktenzeichen: ",""],
+            "collision": ["Kollisionsnummer: ",""],
+            "year": ["Jahr: ",""],
+            "decisiontype": ["Entscheidungsart: ",""], # Urteil, Beschluss...
+            "decision_explain": ["Verfahren: ",""], # Erklärt das Registerzeichen (C, O, KLs...)
+            "register_explain": ["Register/Zusatz: ",""], # Erklärt das ZUSATZregister bei manchen Az (Z.B. R in "B 14 AS 3/18 R")
+            "url": ["Link: ",""], # Manche Gerichte bieten eine aus dem ECLI ableitbare Kurz-URl
         }
-        with open('decisions.json',encoding='utf-8') as json_file:
+        with open('decisions.json', encoding='utf-8') as json_file:
             # In dieser Datei sind die Beschriftungen für die Entscheidungsarten, Registerzeichen etc. enthalten
             self.loaded_data = json.load(json_file)
 
@@ -101,7 +101,7 @@ class Decision:
         else:
             return ""
 
-    def print_decision(self, rawmode=False, output_file=None):
+    def output_decision(self, rawmode=False, output_file=None):
         """Gibt alle aus dem ECLI ermittelten Werte beschriftet aus"""
         if not rawmode:
             print("\nFolgende Daten konnten extrahiert werden:\n---------------------------", file=output_file)
@@ -131,7 +131,7 @@ class Decision:
 ##################
 
 class Decision_BVerfG(Decision):
-    def check_body_bverfg(self,match):
+    def check_body_bverfg(self, match):
         # Bestimmt den Wert für bodytype
         if match.group("bodytype") == "K":
             return "Kammerentscheidung" + f" ({match.group('azbody')}. Senat)"
@@ -292,7 +292,7 @@ class Decision_Other(Decision):
     def __init__(self, ecli_string):
         super().__init__(ecli_string)
         # Die Liste mit Gerichtsnamen ist nur für die Gerichte der Länder erforderlich
-        with open('gerichtes.json',encoding='utf-8') as json_file:
+        with open('gerichte.json', encoding='utf-8') as json_file:
             self.court_names = json.load(json_file)
 
     def valid_court(self, match):
@@ -300,17 +300,17 @@ class Decision_Other(Decision):
             raise InValidCourtError("Kein gültiger ECLI: Ungültiger Gerichtscode")
 
 
-    def determine_jurisdiction(self,match):
+    def determine_jurisdiction(self, match):
         # Die verschiedenen Gerichtsbarkeiten bilden ihre Az. unterschiedlich und verwenden
         # die gleichen Registerzeichen mit unterschiedlicher Bedeutung. Deshalb wird hier überprüft,
         # welche Gerichtsbarkeit vorliegt.
-        if re.match(pattern.ordentliche, match.group("court"),flags=re.VERBOSE):
+        if re.match(pattern.ordentliche, match.group("court"), flags=re.VERBOSE):
             return "o"
-        elif re.match(pattern.sozg, match.group("court"),flags=re.VERBOSE):
+        elif re.match(pattern.sozg, match.group("court"), flags=re.VERBOSE):
             return "s"
-        elif re.match(pattern.arbg, match.group("court"),flags=re.VERBOSE):
+        elif re.match(pattern.arbg, match.group("court"), flags=re.VERBOSE):
             return "a"
-        elif re.match(pattern.verwg, match.group("court"),flags=re.VERBOSE):
+        elif re.match(pattern.verwg, match.group("court"), flags=re.VERBOSE):
             if match.group("court") in ["VKANSBA", "VKMUENC", "VGANSBA", "VGAUGSB", "VGBAYRE", "VGMUENC", "VGREGEN", "VGWUERZ"]:
                 return "vbay"
             else:
@@ -422,6 +422,9 @@ class Decision_Other(Decision):
         self.court_data["date"][1] = match.group("date")[2:4] + "." + match.group("date")[0:2] + "." + match.group("year")
         self.court_data["collision"][1] = super().check_collision(match.group("collision"))
 
+        self.court_data["az"][0] = "Aktenzeichen (max. 17 Stellen): "
+        # Die Az können gerade bei Doppelaktenzeichen zu lang sein, um vollständig im ECLI
+        # erfasst zu werden.
         jurisdiction = self.determine_jurisdiction(match)
         # Das Aktenzeichen wird für jede Gerichtsbarkeit anders gebildet, also zunächst bestimmen, welche hier vorliegt.
         if jurisdiction == "o":
