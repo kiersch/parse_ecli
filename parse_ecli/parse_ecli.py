@@ -55,8 +55,7 @@ if len(ecli_list) == 0:
 else:
     for ecli_string in ecli_list:
         try:
-            my_decision, my_match = ecli_classes.match_ecli(ecli_string)
-            my_decision.parse_ecli(my_match)
+            my_decision = ecli_classes.match_ecli(ecli_string)
             if args.output_file is not None:
                 output_file_string = Path(args.output_file)
                 if output_file_string.exists():

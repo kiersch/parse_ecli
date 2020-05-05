@@ -88,7 +88,7 @@ test_ecli_strings = [
 ("ECLI:DE:VGK:2013:1018.5K1903.12A.00", ecli_classes.Decision_Other),
 ("ECLI:DE:VGK:2015:0211.33L2274.14PVB.00", ecli_classes.Decision_Other),
 ("ECLI:DE:VGBAYRE:2005:0607.B1K04.1182.0A", ecli_classes.Decision_Other),
-("ECLI:DE:VGBAYR:2005:0607.B1K04.1182.0A", ecli_classes.Decision_Other) # ACHTUNG UNGÜLTIG! Nicht vorhandener Gerichtscode. Darf hier noch matchen
+#("ECLI:DE:VGBAYR:2005:0607.B1K04.1182.0A", ecli_classes.Decision_Other) # ACHTUNG UNGÜLTIG! Nicht vorhandener Gerichtscode. Darf hier noch matchen
 
 ]
 
@@ -109,7 +109,7 @@ test_ecli_strings_fail = [
 
 @pytest.mark.parametrize("test_ecli_string, expected", test_ecli_strings)
 def test_match_ecli(test_ecli_string, expected):
-    x, y = ecli_classes.match_ecli(test_ecli_string)
+    x = ecli_classes.match_ecli(test_ecli_string)
     assert isinstance(x, expected)
 
 @pytest.mark.parametrize("test_ecli_string_fail", test_ecli_strings_fail)

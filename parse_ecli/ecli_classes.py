@@ -9,28 +9,43 @@ def match_ecli(ecli_string):
 # besonders geeignet, vgl. https://www.python.org/dev/peps/pep-0572/#syntax-and-semantics
 
     if (match := re.match(pattern.laender_compiled, ecli_string)) is not None:
-        return Decision_Other(ecli_string), match
+        decision = Decision_Other(ecli_string)
+        decision.parse_ecli(match)
+        return decision
 
     elif (match := re.match(pattern.bgh_compiled, ecli_string)) is not None:
-        return Decision_BGH(ecli_string), match
-
+        decision = Decision_BGH(ecli_string)
+        decision.parse_ecli(match)
+        return decision
     elif (match := re.match(pattern.bverfg_compiled, ecli_string)) is not None:
-        return Decision_BVerfG(ecli_string), match
+        decision = Decision_BVerfG(ecli_string)
+        decision.parse_ecli(match)
+        return decision
 
     elif (match := re.match(pattern.bverwg_compiled, ecli_string)) is not None:
-        return Decision_BVerwG(ecli_string), match
+        decision = Decision_BVerwG(ecli_string)
+        decision.parse_ecli(match)
+        return decision
 
     elif (match := re.match(pattern.bag_compiled, ecli_string)) is not None:
-        return Decision_BAG(ecli_string), match
+        decision = Decision_BAG(ecli_string)
+        decision.parse_ecli(match)
+        return decision
 
     elif (match := re.match(pattern.bsg_compiled, ecli_string)) is not None:
-        return Decision_BSG(ecli_string), match
+        decision = Decision_BSG(ecli_string)
+        decision.parse_ecli(match)
+        return decision
 
     elif (match := re.match(pattern.bfh_compiled, ecli_string)) is not None:
-        return Decision_BFH(ecli_string), match
+        decision = Decision_BFH(ecli_string)
+        decision.parse_ecli(match)
+        return decision
 
     elif (match := re.match(pattern.bpatg_compiled, ecli_string)) is not None:
-        return Decision_BPatG(ecli_string), match
+        decision = Decision_BPatG(ecli_string)
+        decision.parse_ecli(match)
+        return decision
 
     else:
         # Hier werden die Fälle erfasst, in denen kein ECLI-Ausruck zu einem Treffer geführt hat.
