@@ -276,13 +276,23 @@ class Decision_BVerwG(Decision):
         self.court_data["bodytype"][1] = self.determine_body(match.group("azbody"), match.group("azreg"))
 
 class Decision_BFH(Decision):
+    def determine_body(self, azbody, azreg):
+
+        if azreg == "GRS":
+            return "Großer Senat"
+        else:
+            return azbody + ". Senat"
+
+
     def parse_ecli(self, match):
 
         self.court_data["court"][1] = "BFH"
         self.court_data["decisiontype"][1] = self.loaded_data["bfh_decisiontype"][match.group("type")]
         self.court_data["date"][1] = match.group("date")[0:2] + "." + match.group("date")[2:4] + "." + match.group("year")
         self.court_data["collision"][1] = super().check_collision(match.group("collision"))
-        self.court_data["az"][1] = (match.group("azbody") + " " + match.group("azreg")
+        azbody = super().check_azpart_empty(match.group("azbody"))
+        self.court_data["bodytype"][1] = self.determine_body(azbody, match.group("azreg"))
+        self.court_data["az"][1] = (azbody + " " + match.group("azreg")
                                         + " " + match.group("aznumber").lstrip("0") + "/" + match.group("azyear"))
         self.court_data["decision_explain"][1] = self.loaded_data["bfh_explain"][match.group("azreg")]
 

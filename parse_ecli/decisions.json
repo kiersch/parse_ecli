@@ -328,7 +328,8 @@
       "E" : "Erinnerungen in Kostenfestsetzungsverfahren",
       "K" : "Entschädigungsklagen wegen überlanger Verfahrensdauer",
       "R"  : "Revisionsverfahren",
-      "S"  : "Sonstiges Verfahren"
+      "S"  : "Sonstiges Verfahren",
+      "GRS" : "Verfahren vor dem Großen Senat"
     },
     "bag_explain" :{
       "AZA"  : "PKH",
