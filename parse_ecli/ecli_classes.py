@@ -198,7 +198,6 @@ class Decision_BVerfG(Decision):
 
 class Decision_BGH(Decision):
     def determine_body(self, azbody, azreg):
-        print("determine body", azbody, azreg)
         if azbody != "":
             if re.match(r"\d", azbody) and "BG" not in azreg:
                 return azbody + ". Strafsenat"
@@ -247,16 +246,34 @@ class Decision_BVerwG(Decision):
         url = "https://www.bverwg.de/de/" + ecli_string[20:]
         return url
 
+    def determine_body(self, azbody, azreg):
+
+        if "W" in azreg:
+            return azbody + ". Wehrdienstsenat"
+        elif azreg in ["D", "DB"]:
+            if int(azbody) > 1:
+                return azbody + ". Disziplinarsenat"
+            else:
+                return "Disziplinarsenat"
+        elif azreg == "F":
+            return "Fachsenat nach § 189 VwGO"
+        else:
+            return azbody + ". Senat"
+
     def parse_ecli(self, match):
 
         self.court_data["court"][1] = "BVerwG"
         self.court_data["decisiontype"][1] = self.loaded_data["bverwg_decisiontype"][match.group("type")]
         self.court_data["date"][1] = match.group("date")[0:2] + "." + match.group("date")[2:4] + "." + match.group("year")
         self.court_data["collision"][1] = super().check_collision(match.group("collision"))
-        self.court_data["az"][1] = (match.group("azbody") + " " + self.loaded_data["bverwg_az"][match.group("azreg")]
-                                        + " " + match.group("aznumber").lstrip("0") + "." + match.group("azyear"))
-        self.court_data["decision_explain"][1] = self.loaded_data["bverwg_explain"][match.group("azreg")]
+        try:
+            self.court_data["az"][1] = (match.group("azbody") + " " + self.loaded_data["bverwg_az"][match.group("azreg")]
+                                            + " " + match.group("aznumber").lstrip("0") + "." + match.group("azyear"))
+            self.court_data["decision_explain"][1] = self.loaded_data["bverwg_explain"][match.group("azreg")]
+        except KeyError as e:
+            raise InValidAZError(f"Ungültiges Registerzeichen: {match.group('azreg')}") from e
         self.court_data["url"][1] = self.generate_url(self.ecli)
+        self.court_data["bodytype"][1] = self.determine_body(match.group("azbody"), match.group("azreg"))
 
 class Decision_BFH(Decision):
     def parse_ecli(self, match):

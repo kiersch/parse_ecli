@@ -282,3 +282,40 @@ def test_laender_fail(test_court_data_laender_fail):
 
     with pytest.raises((KeyError, ecli_classes.InValidAZError)):
         laender.parse_ecli(match)
+
+##########
+# BVerwG
+##########
+
+test_court_data_bverwg = [
+    ("ECLI:DE:BVERWG:2016:210416U2C4.15.0", ("BVerwG", "21.04.2016", "2 C 4.15", "0", "Revisionen in Verwaltungsstreitverfahren (§§ 49, 132 VwGO)", "2. Senat", "https://www.bverwg.de/de/210416U2C4.15.0")),
+    ("ECLI:DE:BVERWG:2013:291013U1D1.12.0", ("BVerwG", "29.10.2013", "1 D 1.12", "0", "Berufungsverfahren in Disziplinarsachen", "Disziplinarsenat", "https://www.bverwg.de/de/291013U1D1.12.0")),
+    ("ECLI:DE:BVERWG:2020:170320B20F3.18.0", ("BVerwG", "17.03.2020", "20 F 3.18", "0", "Verwaltungsstreitsachen vor dem Fachsenat wegen der verweigerten Vorlage von Urkunden, Akten oder elektronischen Dokumente sowie der verweigerten Erteilung von Auskünften (§ 99 Abs. 2 VwGO)", "Fachsenat nach § 189 VwGO", "https://www.bverwg.de/de/170320B20F3.18.0")),
+
+]
+
+test_court_data_bverwg_fail = [
+"ECLI:DE:BVERWG:2016:210416U2UU4.15.0", # Ungültiges Registerzeichen BVerfG
+]
+
+
+@pytest.mark.parametrize("bverwg_input, expected", test_court_data_bverwg)
+def test_bverwg_parse(bverwg_input, expected):
+    bverwg = ecli_classes.Decision_BVerwG(bverwg_input)
+    match = re.match(pattern.bverwg_compiled, bverwg_input)
+    bverwg.parse_ecli(match)
+    assert bverwg.court_data["court"][1] == expected[0]
+    assert bverwg.court_data["date"][1] == expected[1]
+    assert bverwg.court_data["az"][1] == expected[2]
+    assert bverwg.court_data["collision"][1] == expected[3]
+    assert bverwg.court_data["decision_explain"][1] == expected[4]
+    assert bverwg.court_data["bodytype"][1] == expected[5]
+    assert bverwg.court_data["url"][1] == expected[6]
+
+@pytest.mark.parametrize("test_court_data_bverwg_fail", test_court_data_bverwg_fail)
+def test_bverwg_fail(test_court_data_bverwg_fail):
+    bverwg = ecli_classes.Decision_BVerwG(test_court_data_bverwg_fail)
+    match = re.match(pattern.bverwg_compiled, test_court_data_bverwg_fail)
+
+    with pytest.raises((KeyError, ecli_classes.InValidAZError)):
+        bverwg.parse_ecli(match)
