@@ -110,7 +110,7 @@ Die ECLI des BPatG werden wie folgt gebildet:
 Name|Funktion
 ---|---
 parse_ecli.py|Hauptprogramm (Ein/Ausgabe)
-ecli_classes.py|Stellt die Entscheidungsklassen zur Verfügung. Das Model kann auch selbstständig in andere Skripte importiert werden, sodass die Erkennung direkt in das Programm intergriert werden kann.
+ecli_classes.py|Stellt die Entscheidungsklassen zur Verfügung. Das Modul kann auch selbstständig in andere Skripte importiert werden, sodass die Erkennung direkt in das Programm intergriert werden kann.
 pattern.py|Enthält die Regexes
 
 ### parse_ecli.py
@@ -119,7 +119,7 @@ Dient als ausführbares Skript, das für die Eingabe von ECLI-Strings verantwort
 ### ecli_classes.py
 Stellt die Hauptfunktionalität des Programms zur Verfügung und kann in andere Skripte eingebunden werden.
 
-Die Funktion `match_ecli(ecli_string)` gibt ein Entscheidungs-Objekt zurück, das ein dict `court_data` enthält. Dieses enthält die Daten, die aus dem ECLI extrahiert werden konnten. Jedem key ist eine Liste zugeordnet, deren erstes Feld eine Datenbeschreibung ist. Die eigentlichen Daten liegen im zweiten Feld, das leer vorinitialisiert ist.
+Die Funktion `match_ecli(ecli_string)` gibt ein Entscheidungs-Objekt zurück, das ein dict namens `court_data` enthält. Dieses enthält die Daten, die aus dem ECLI extrahiert werden konnten. Jedem key ist eine Liste zugeordnet, deren erstes Feld eine Datenbeschreibung ist. Die eigentlichen Daten liegen im zweiten Feld, das leer vorinitialisiert ist.
 
 key|values|Erklärung
 ---|---|---
@@ -133,6 +133,7 @@ key|values|Erklärung
 "decision_explain"| ["Verfahren ",""]|Erläutert die Verfahrensart bzw. das Sachgebiet anhand des Registerzeichens (z.B. Revision in Zivilsachen)
 "register_explain"| ["Register/Zusatz: ",""]|Manche Gerichte (etwas Sozialgerichtsbarkeit) verwenden ein zusätzliches Registerzeichen, das hier erläutert wird.
 "url"| ["Link: ",""]|Beim BVerfG und BVerwG wird zudem auf Basis des ECLI eine Kurz-URL zur Entscheidung generiert.
+
 
 
 ## Ziele
