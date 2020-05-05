@@ -127,10 +127,10 @@ class Decision:
             # In court_data sind jedem Eintrag eine Liste zugeordnet. Wenn das zweite Feld Werte
             # enthält, so wird der Eintrag ausgegeben
             if not rawmode:
-                if eintrag[1] != "":
+                if eintrag[1] != "" and eintrag[1] is not None:
                     self.pretty_print(eintrag[0],eintrag[1], output_file)
             elif rawmode:
-                if eintrag[1] != "":
+                if eintrag[1] != "" and eintrag[1] is not None:
                     print(eintrag[1]+";", end="", file=output_file)
         if rawmode:
             print("", file=output_file)
@@ -178,6 +178,7 @@ class Decision_BVerfG(Decision):
         self.court_data["url"][1] = self.generate_url(self.ecli)
 
         azbody = super().check_azpart_empty(match.group("azbody"))
+
         # Bei Verzögerungsbeschwerden gibt es Aktenzeichen wie Vz 10/16,
         # also ohne Spruchkörper. Hier einfacher zu behandeln als in Regex:
         if azbody == "":
@@ -196,19 +197,48 @@ class Decision_BVerfG(Decision):
 ##################
 
 class Decision_BGH(Decision):
+    def determine_body(self, azbody, azreg):
+        print("determine body", azbody, azreg)
+        if azbody != "":
+            if re.match(r"\d", azbody) and "BG" not in azreg:
+                return azbody + ". Strafsenat"
+            elif re.match("[IVX]", azbody):
+                return azbody + ". Zivilsenat"
+
+        if "BG" in azreg:
+            return "Ermittlungsrichter"
+        elif azreg in ["KART", "ENVR", "KVR", "KZR", "KVZ"]:
+            return "Kartellsenat"
+        elif "ANWST" in azreg:
+            return "Senat für Anwaltssachen"
+        elif "NOT" in azreg:
+            return "Senat für Notarsachen"
+        elif "RI" in azreg:
+            return "Dienstgericht des Bundes"
+        elif "LW" in azreg:
+            return "Senat für Landwirtschaftssachen"
+        else:
+            return azbody
+
     def parse_ecli(self, match):
 
         self.court_data["court"][1] = "BGH"
         self.court_data["decisiontype"][1] = self.loaded_data["bgh_decisiontype"][match.group("type")]
         self.court_data["date"][1] = match.group("date")[0:2] + "." + match.group("date")[2:4] + "." + match.group("year")
         self.court_data["collision"][1] = super().check_collision(match.group("collision"))
-        if match.group("azbody") != "":
-            self.court_data["az"][1] = (match.group("azbody") + " " + self.loaded_data["bgh_az"][match.group("azreg")]
-                                            + " " + match.group("aznumber").lstrip("0") + "/" + match.group("azyear"))
-        else:
-            self.court_data["az"][1] = (self.loaded_data["bgh_az"][match.group("azreg")]
-                                            + " " + match.group("aznumber").lstrip("0") + "/" + match.group("azyear"))
-        self.court_data["decision_explain"][1] = self.loaded_data["bgh_explain"][match.group("azreg")]
+        azbody = super().check_azpart_empty(match.group("azbody"))
+        self.court_data["bodytype"][1] = self.determine_body(azbody, match.group("azreg"))
+
+        try:
+            if azbody != "":
+                self.court_data["az"][1] = (azbody + " " + self.loaded_data["bgh_az"][match.group("azreg")]
+                                                + " " + match.group("aznumber").lstrip("0") + "/" + match.group("azyear"))
+            else:
+                self.court_data["az"][1] = (self.loaded_data["bgh_az"][match.group("azreg")]
+                                                + " " + match.group("aznumber").lstrip("0") + "/" + match.group("azyear"))
+            self.court_data["decision_explain"][1] = self.loaded_data["bgh_explain"][match.group("azreg")]
+        except KeyError as e:
+            raise InValidAZError(f"Ungültiges Registerzeichen: {match.group('azreg')}") from e
 
 
 class Decision_BVerwG(Decision):

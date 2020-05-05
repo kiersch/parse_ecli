@@ -165,12 +165,16 @@ def test_bverfg_fail(test_court_data_bverfg_fail):
 ##########
 
 test_court_data_bgh = [
-    ("ECLI:DE:BGH:2016:180216URISTR1.15.0", ("BGH", "18.02.2016", "RiSt(R) 1/15", "0", "Urteil", "Revisionen in Disziplinarsachen nach dem Deutschen Richtergesetz")),
-    ("ECLI:DE:BGH:2016:310516BIZB39.15.0", ("BGH", "31.05.2016", "I ZB 39/15", "0", "Beschluss", "Beschwerden, Rechtsbeschwerden, weitere Beschwerden, Beschwerden gegen die Nichtzulassung der Revision nach dem BEG")),
-    ("ECLI:DE:BGH:2020:040220B3STR313.19.1", ("BGH", "04.02.2020", "3 StR 313/19", "1 (Es gibt mehrere Entscheidungen vom gleichen Datum unter diesem Az.!)", "Beschluss", "Revisionen und Vorlegungssachen nach § 121 Abs.1 Nr.1, Abs. 2 GVG, § 79 Abs. 3 OWiG, §§ 13 Abs. 4, 25 StrRehaG")),
-    ("ECLI:DE:BGH:2020:040220B5AR.VS.64.19.0", ("BGH", "04.02.2020", "5 AR(VS) 64/19", "0", "Beschluss", "Entscheidungen über Justizverwaltungsakte")),
-    ("ECLI:DE:BGH:2020:180320BIXZA4.20.0", ("BGH", "18.03.2020", "IX ZA 4/20", "0", "Beschluss", "Anträge außerhalb eines in der Rechtsmittelinstanz anhängigen Verfahrens")),
-    ("ECLI:DE:BGH:2020:200220UIZR176.18.0", ("BGH", "20.02.2020", "I ZR 176/18", "0", "Urteil", "Revisionen, Beschwerden gegen die Nichtzulassung der Revision, Anträge auf Zulassung der Sprungrevision, Berufungen in Patentsachen")),
+    ("ECLI:DE:BGH:2016:180216URISTR1.15.0", ("BGH", "18.02.2016", "RiSt(R) 1/15", "0", "Urteil", "Revisionen in Disziplinarsachen nach dem Deutschen Richtergesetz", "Dienstgericht des Bundes")),
+    ("ECLI:DE:BGH:2016:310516BIZB39.15.0", ("BGH", "31.05.2016", "I ZB 39/15", "0", "Beschluss", "Beschwerden, Rechtsbeschwerden, weitere Beschwerden, Beschwerden gegen die Nichtzulassung der Revision nach dem BEG", "I. Zivilsenat")),
+    ("ECLI:DE:BGH:2020:040220B3STR313.19.1", ("BGH", "04.02.2020", "3 StR 313/19", "1 (Es gibt mehrere Entscheidungen vom gleichen Datum unter diesem Az.!)", "Beschluss", "Revisionen und Vorlegungssachen nach § 121 Abs.1 Nr.1, Abs. 2 GVG, § 79 Abs. 3 OWiG, §§ 13 Abs. 4, 25 StrRehaG", "3. Strafsenat")),
+    ("ECLI:DE:BGH:2020:040220B5AR.VS.64.19.0", ("BGH", "04.02.2020", "5 AR(VS) 64/19", "0", "Beschluss", "Entscheidungen über Justizverwaltungsakte", "5. Strafsenat")),
+    ("ECLI:DE:BGH:2020:180320BIXZA4.20.0", ("BGH", "18.03.2020", "IX ZA 4/20", "0", "Beschluss", "Anträge außerhalb eines in der Rechtsmittelinstanz anhängigen Verfahrens", "IX. Zivilsenat")),
+    ("ECLI:DE:BGH:2020:200220UIZR176.18.0", ("BGH", "20.02.2020", "I ZR 176/18", "0", "Urteil", "Revisionen, Beschwerden gegen die Nichtzulassung der Revision, Anträge auf Zulassung der Sprungrevision, Berufungen in Patentsachen", "I. Zivilsenat")),
+    ("ECLI:DE:BGH:2020:070420BAK6.20.0", ("BGH", "07.04.2020", "AK 6/20", "0", "Beschluss", "Aktenkontrolle für Haftprüfungsverfahren", "")),
+    ("ECLI:DE:BGH:2020:240320BENVR45.18.0", ("BGH", "24.03.2020", "EnVR 45/18", "0", "Beschluss", "Rechtsbeschwerden in energiewirtschaftsrechtlichen Verwaltungssachen nach dem EnWG", "Kartellsenat")),
+    ("ECLI:DE:BGH:2020:240320BKVZ3.19.0", ("BGH", "24.03.2020", "KVZ 3/19", "0", "Beschluss", "Nichtzulassungsbeschwerden in Kartellverwaltungssachen", "Kartellsenat")),
+    ("ECLI:DE:BGH:2019:280819BNOTST.BRFG.1.18.0", ("BGH", "28.08.2019", "NotSt(Brfg) 1/18", "0", "Beschluss", "Berufungen und Anträge auf Zulassung der Berufung gegen Urteile der Oberlandesgerichte in Disziplinarsachen gegen Notare", "Senat für Notarsachen")),
 ]
 
 test_court_data_bgh_fail = [
@@ -189,6 +193,7 @@ def test_bgh_parse_1(bgh_input, expected):
     assert bgh.court_data["collision"][1] == expected[3]
     assert bgh.court_data["decisiontype"][1] == expected[4]
     assert bgh.court_data["decision_explain"][1] == expected[5]
+    assert bgh.court_data["bodytype"][1] == expected[6]
 
 
 @pytest.mark.parametrize("test_court_data_bgh_fail", test_court_data_bgh_fail)
