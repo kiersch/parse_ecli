@@ -3,6 +3,8 @@
 
 Dieses Programm dient der Aufschlüsselung von deutschen ECLI wie `ECLI:DE:BVERFG:2020:RK20200501.1BVR099620`.
 
+**Python 3.8** ist zwingend erforderlich.
+
 ## Bedienung
 
 ```
@@ -47,6 +49,7 @@ Je nach Gerichtsbarkeit unterscheidet sich die Datendichte des ECLI. So kann aus
 Feld|Wert
 ---|---
 Gericht|BVerwG
+Spruchkörper|3. Senat
 Entscheidungsdatum|17.07.2019
 Aktenzeichen (max. 17 Stellen)|3 BN 2.18
 Kollisionsnummer|0
@@ -109,6 +112,28 @@ Name|Funktion
 parse_ecli.py|Hauptprogramm (Ein/Ausgabe)
 ecli_classes.py|Stellt die Entscheidungsklassen zur Verfügung. Das Model kann auch selbstständig in andere Skripte importiert werden, sodass die Erkennung direkt in das Programm intergriert werden kann.
 pattern.py|Enthält die Regexes
+
+### parse_ecli.py
+Dient als ausführbares Skript, das für die Eingabe von ECLI-Strings verantwortlich ist und sie an die Klassen in `ecli_classes.py` übergibt. Enthält auch die Datei Ein-/Ausgabe.
+
+### ecli_classes.py
+Stellt die Hauptfunktionalität des Programms zur Verfügung und kann in andere Skripte eingebunden werden.
+
+Die Funktion `match_ecli(ecli_string)` gibt ein Entscheidungs-Objekt zurück, das ein dict `court_data` enthält. Dieses enthält die Daten, die aus dem ECLI extrahiert werden konnten. Jedem key ist eine Liste zugeordnet, deren erstes Feld eine Datenbeschreibung ist. Die eigentlichen Daten liegen im zweiten Feld, das leer vorinitialisiert ist.
+
+key|values|Erklärung
+---|---|---
+"court"| ["Gericht: ",""]|Enthält das Gericht hinter dem Gerichtscode. Bei den Gerichten der Länder muss der Code in der Datei `gerichte.json` aufgelöst werden.
+"bodytype"| ["Spruchkörper: ",""]|Enthält den Spruchkörper (z.B. bei BGH) oder jedenfalls den Spruchkörpertyp (z.B. bei einer Kammerentscheidung des BVerfG)
+"date"| ["Entscheidungsdatum: ",""]|
+"az"| ["Aktenzeichen: ",""]|Das Aktenzeichen wird soweit möglich aus dem ECLI generiert. Bei Doppelaktenzeichen ist dies nur teilweise möglich. Die Registerzeichen werden, soweit sie nicht nur aus Großbuchstaben bestehen in 'decisions.json' nachgeschlagen.
+"collision"| ["Kollisionsnummer: ",""]|Die Kollisionsnummer der Entscheidung.
+"year"| ["Jahr: ",""]|
+"decisiontype"| ["Entscheidungsart: ",""]|Der Entscheidungstyp, also z.B. Urteil, Beschluss, Gerichtsbescheid
+"decision_explain"| ["Verfahren ",""]|Erläutert die Verfahrensart bzw. das Sachgebiet anhand des Registerzeichens (z.B. Revision in Zivilsachen)
+"register_explain"| ["Register/Zusatz: ",""]|Manche Gerichte (etwas Sozialgerichtsbarkeit) verwenden ein zusätzliches Registerzeichen, das hier erläutert wird.
+"url"| ["Link: ",""]|Beim BVerfG und BVerwG wird zudem auf Basis des ECLI eine Kurz-URL zur Entscheidung generiert.
+
 
 ## Ziele
 * Auch ausländische ECLI sollen analysiert werden können.
