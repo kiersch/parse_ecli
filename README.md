@@ -5,6 +5,8 @@ Dieses Programm dient der Aufschlüsselung von deutschen ECLI wie `ECLI:DE:BVERF
 
 **Python 3.8** ist zwingend erforderlich.
 
+Eine webbasierte Live-Demo ist [hier](http:ecli.kiersch.org) verfügbar.
+
 ## Bedienung
 
 ```
