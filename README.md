@@ -1,33 +1,67 @@
 # parse_ecli
-[![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-360/)
+![Version 0.9.3](https://img.shields.io/badge/version-0.9.3-green)
+[![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/)
+![MIT License](https://img.shields.io/badge/license-MIT-lightgrey)
 
-Dieses Programm dient der Aufschlüsselung von deutschen ECLI wie `ECLI:DE:BVERFG:2020:RK20200501.1BVR099620`.
+
+
+Dieses Programm dient der Aufschlüsselung von deutschen ECLI wie `ECLI:DE:BVERFG:2020:RK20200501.1BVR099620`. Es kann als Modul in Python Software eingebunden oder über die Kommandozeile selbstständig aufgerufen werden.
 
 **Python 3.8** ist zwingend erforderlich.
 
 Eine webbasierte Live-Demo ist [hier](http:ecli.kiersch.org) verfügbar.
 
-## Bedienung
+## Installation
+Die Installation erfolgt am einfachsten über das [PyPi-Paket](https://pypi.org/project/parse-ecli/):
+```
+python -m pip install parse-ecli
+```
+Je nach Betriebssystem muss `python` ggf. durch `python3` oder gar `python3.8` ersetzt werden.
+
+ALternativ kann dieses GitHub-Repo heruntergeladen werden. Die Installation erfolgt dann im Wurzelverzeichnis via
+```
+python -m pip install .
+```
+
+## Benutzung über die Kommandozeile
+
+Nach der Installation wird (typischerweise systemweit) der Befehl `parse-ecli` registriert. Das Programm kann dann über die Kommandozeile (Bash, CMD,Powershell etc.) direkt aufgerufen werden:
 
 ```
-python parse_ecli.py <ECLI>
+parse-ecli <ECLI>
 ```
 Der ECLI muss vollständig eingegeben werden. Führende Leerzeichen und Sonderzeichen werden entfernt.
 
 Optional:
 
 ```
-python parse_ecli.py -r
+parse-ecli -r <ECLI>
 ```
 für rawmode, d.h. die Daten werden ohne Beschriftung nur durch Semikolon getrennt ausgegeben.
 
 ```
-python parse_ecli.py -i input_file
-python parse_ecli.py -o output_file
+parse-ecli -i input_file
+```
+ECLI können auch aus einer Textdatei eingelesen werden, die mit `-i` angegeben wird. Dabei wird zeilenweise ein ECLI pro Zeile erfasst, die Zeilen dürfen keine anderen Daten enthalten. Zeilen, die nicht mit `ECLI:DE:` beginnen, werden ignoriert. Bei Nutzung der Option `-i` wird ein zusätzlich über die Kommandozeile eingegebener ECLI ignoriert.
 
 ```
-ECLI können auch aus einer Textdatei eingelesen werden, die mit `-i` angegeben wird. Dabei wird zeilenweise ein ECLI pro Zeile erfasst, die Zeilen dürfen keine anderen Daten enthalten. Zeilen, die nicht mit `ECLI:DE:` beginnen, werden ignoriert.
+parse-ecli -o output_file <ECLI>
+```
 Die Ausgabe kann auch in eine Datei umgeleitet werden, die mit `-o` angegeben wird.
+
+Durch Kombination der Optionen kann etwa eine Datei `input.txt` mit 100 ECLI maschinenlesbar in der Datei `output.txt` aufbereitet werden:
+```
+parse-ecli -r -i input.txt -o output.txt
+```
+
+## Nutzung als Modul
+Nach der Installation kann das Programm mittels
+```
+import parse_ecli
+```
+in beliebige Python-Module eingebaut werden.
+
+Dabei gibt
 
 ## Überblick
 
@@ -111,15 +145,13 @@ Die ECLI des BPatG werden wie folgt gebildet:
 ## Module
 Name|Funktion
 ---|---
-parse_ecli.py|Hauptprogramm (Ein/Ausgabe)
-ecli_classes.py|Stellt die Entscheidungsklassen zur Verfügung. Das Modul kann auch selbstständig in andere Skripte importiert werden, sodass die Erkennung direkt in das Programm intergriert werden kann.
+parse_ecli.py|Stellt die Entscheidungsklassen zur Verfügung. Das Modul kann selbstständig in andere Skripte importiert werden, sodass die Erkennung direkt in das Programm intergriert werden kann. Enthält auch die Ein-/Ausgabelogik für den direkten Aufruf über die Kommandozeile.
 pattern.py|Enthält die Regexes
-
-### parse_ecli.py
-Dient als ausführbares Skript, das für die Eingabe von ECLI-Strings verantwortlich ist und sie an die Klassen in `ecli_classes.py` übergibt. Enthält auch die Datei Ein-/Ausgabe.
 
 ### ecli_classes.py
 Stellt die Hauptfunktionalität des Programms zur Verfügung und kann in andere Skripte eingebunden werden.
+
+Die Funktion `main_func` wird nur ausgeführt, wenn das Programm mit `parse-ecli` über die Kommandozeile aufgerufen wird. Hier ist die Ein-/Ausgabefunktionalität enthalten.
 
 Die Funktion `match_ecli(ecli_string)` gibt ein Entscheidungs-Objekt zurück, das ein dict namens `court_data` enthält. Dieses enthält die Daten, die aus dem ECLI extrahiert werden konnten. Jedem key ist eine Liste zugeordnet, deren erstes Feld eine Datenbeschreibung ist. Die eigentlichen Daten liegen im zweiten Feld, das leer vorinitialisiert ist.
 
@@ -136,6 +168,11 @@ key|values|Erklärung
 "register_explain"| ["Register/Zusatz: ",""]|Manche Gerichte (etwas Sozialgerichtsbarkeit) verwenden ein zusätzliches Registerzeichen, das hier erläutert wird.
 "url"| ["Link: ",""]|Beim BVerfG und BVerwG wird zudem auf Basis des ECLI eine Kurz-URL zur Entscheidung generiert.
 
+Die Entscheidungsklassen verfügen über eine Methode namens `output_decision`, die mit zwei optionalen Argumenten aufgerufen werden kann:
+```
+output_decision(rawmode=False, output_file=None):
+```
+Wird `rawmode` als `true` übergeben, so wird die entsprechende Ausgabe veranlasst (vgl. oben). Als `output_file` kann ein Dateiobjekt angegeben werden, sodass die Ausgabe dorthin erfolgt.
 
 
 ## Ziele
