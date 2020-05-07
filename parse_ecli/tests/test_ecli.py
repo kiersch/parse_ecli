@@ -3,9 +3,9 @@
 import sys
 import re
 import json
-import ecli_classes
+from parse_ecli import parse_ecli
 import pytest
-import pattern
+from parse_ecli import pattern
 
 
 
@@ -15,80 +15,80 @@ import pattern
 test_ecli_strings = [
 # Diese Strings entsprechen den Regex-Pattern. Einige von ihnen (gesondert markiert)
 # sind KEINE GÜLTIGEN ECLI, sondern werden nachgelagert aussortiert.
-("ECLI:DE:BGH:2016:180216URISTR1.15.0", ecli_classes.Decision_BGH),
-("ECLI:DE:BVERFG:2020:RK20200225.1BVR128217", ecli_classes.Decision_BVerfG),
-("ECLI:DE:BPATG:2020:260320B26WPAT46.17.0", ecli_classes.Decision_BPatG),
-("ECLI:DE:BPATG:2016:120716U3LIR5.15.0", ecli_classes.Decision_BPatG),
-("ECLI:DE:BPATG:2017:310617U2NI13.16.0", ecli_classes.Decision_BPatG),
-("ECLI:DE:BAG:2020:270220.B.2AZN1389.19.0", ecli_classes.Decision_BAG),
-("ECLI:DE:BAG:2020:210120.U.3AZR73.19.0", ecli_classes.Decision_BAG),
-("ECLI:DE:BAG:2020:270220.B.GS1389.19.0", ecli_classes.Decision_BAG), # Fiktiv zum Test von GS (matcht auch ohne Senat)
-("ECLI:DE:BFH:2019:U.180919.IIIR3.19.0", ecli_classes.Decision_BFH),
-("ECLI:DE:BFH:2019:U.111219.XIR13.18.0", ecli_classes.Decision_BFH),
-("ECLI:DE:ARBGD:2018:0824.4CA3038.18.00", ecli_classes.Decision_Other),
-("ECLI:DE:VGKASSE:2020:0406.3L348.20.KS.00", ecli_classes.Decision_Other),
-("ECLI:DE:LAGK:2005:0713.8SA796.04.00", ecli_classes.Decision_Other),
-("ECLI:DE:LAGHAM:2011:0412.19SA1951.10.00", ecli_classes.Decision_Other),
-("ECLI:DE:VGGE:2011:0124.12K5288.09.00", ecli_classes.Decision_Other),
-("ECLI:DE:VGD:2010:1217.13K4888.10.00", ecli_classes.Decision_Other),
-("ECLI:DE:VGAC:2012:0314.8K1740.06.00", ecli_classes.Decision_Other),
-("ECLI:DE:VGMI:2011:0808.3K816.11.00", ecli_classes.Decision_Other),
-("ECLI:DE:OVGNRW:2020:0421.9A287.19.00", ecli_classes.Decision_Other),
-("ECLI:DE:VGAC:2020:0415.3L2.20.00", ecli_classes.Decision_Other),
-("ECLI:DE:SGAC:2012:0120.S19SO109.11.00", ecli_classes.Decision_Other),
-("ECLI:DE:SGDT:2020:0218.S14U153.14.00", ecli_classes.Decision_Other),
-("ECLI:DE:SGDU:2020:0214.S44KR379.17.00", ecli_classes.Decision_Other),
-("ECLI:DE:SGDO:2020:0204.S17U237.18.00", ecli_classes.Decision_Other),
-("ECLI:DE:SGGE:2019:0807.S46KR70.17.00", ecli_classes.Decision_Other),
-("ECLI:DE:LSGNRW:2019:1216.L8BA4.18B.ER.00", ecli_classes.Decision_Other),
-("ECLI:DE:LSGNRW:2019:1205.L7AS1764.18.00", ecli_classes.Decision_Other),
-("ECLI:DE:FGD:2020:0325.11V3249.19A.AO.00", ecli_classes.Decision_Other),
-("ECLI:DE:FGMS:2020:0305.5K1670.17U.00", ecli_classes.Decision_Other),
-("ECLI:DE:FGD:2020:0205.4K3554.18Z.00", ecli_classes.Decision_Other),
-("ECLI:DE:FGD:2020:0128.10K2166.16E.00", ecli_classes.Decision_Other),
-("ECLI:DE:FGK:2020:0124.1K1041.17.00", ecli_classes.Decision_Other),
-("ECLI:DE:FGMS:2020:0121.6K1384.18G.F.00", ecli_classes.Decision_Other),
-("ECLI:DE:FGMS:2020:0121.11V3213.19AO.00", ecli_classes.Decision_Other),
-("ECLI:DE:LGSI:2012:0316.2O219.11.00", ecli_classes.Decision_Other),
-("ECLI:DE:OLGHAM:2012:0417.III3RVS24.12.00", ecli_classes.Decision_Other),
-("ECLI:DE:AGK:2005:0609.129C70.04.00", ecli_classes.Decision_Other),
-("ECLI:DE:OLGHAM:2020:0416.4WS72.20.00", ecli_classes.Decision_Other),
-("ECLI:DE:OLGD:2020:0330.2RBS47.20.00", ecli_classes.Decision_Other),
-("ECLI:DE:OLGK:2020:0327.1U95.19.00", ecli_classes.Decision_Other),
-("ECLI:DE:OLGHAM:2020:0326.2AUSL15.19.00", ecli_classes.Decision_Other),
-("ECLI:DE:OLGK:2020:0324.4U235.19.00", ecli_classes.Decision_Other),
-("ECLI:DE:OLGHAM:2020:0319.4RVS25.20.00", ecli_classes.Decision_Other),
-("ECLI:DE:OLGD:2020:0205.VERG21.19.00", ecli_classes.Decision_Other),
-("ECLI:DE:OLGK:2020:0205.5W1.20.00", ecli_classes.Decision_Other),
-("ECLI:DE:OLGD:2020:0121.I21U46.19.00", ecli_classes.Decision_Other),
-("ECLI:DE:LGKLE:2020:0320.140AR1.20.00", ecli_classes.Decision_Other),
-("ECLI:DE:LGK:2020:0317.11S33.19.00", ecli_classes.Decision_Other),
-("ECLI:DE:LGK:2020:0311.84O204.19.00", ecli_classes.Decision_Other),
-("ECLI:DE:LGDO:2020:0304.8O2.20KART.00", ecli_classes.Decision_Other),
-("ECLI:DE:LGMG:2020:0302.4S147.19.00", ecli_classes.Decision_Other),
-("ECLI:DE:LGBN:2020:0228.1O21.19.00", ecli_classes.Decision_Other),
-("ECLI:DE:LGE:2020:0225.17O168.19.00", ecli_classes.Decision_Other),
-("ECLI:DE:AGK:2020:0310.120C166.19.00", ecli_classes.Decision_Other),
-("ECLI:DE:AGRE1:2020:0225.60XIV.L28.20U.00", ecli_classes.Decision_Other),
-("ECLI:DE:AGAC1:2020:0213.107C301.19.01", ecli_classes.Decision_Other),
-("ECLI:DE:AGMS:2020:0211.96C170.20.00", ecli_classes.Decision_Other),
-("ECLI:DE:AGKLE1:2020:0123.35C360.19.00", ecli_classes.Decision_Other),
-("ECLI:DE:AGDO:2020:0121.729DS060JS513.19.00", ecli_classes.Decision_Other),
-("ECLI:DE:VFGHNRW:2020:0415.VERFGH30.20VB2.00", ecli_classes.Decision_Other),
-("ECLI:DE:MSCHOGK:2011:1025.3U8.11BSCHMO.00", ecli_classes.Decision_Other),
-("ECLI:DE:SCHGMI:2007:0821.21C143.07BSCH.00", ecli_classes.Decision_Other),
-("ECLI:DE:RSCHGDU:2012:0125.5C8.11BSCH.00", ecli_classes.Decision_Other),
-("ECLI:DE:RSCHOGK:2018:1122.3U74.17BSCHRH.00", ecli_classes.Decision_Other),
-("ECLI:DE:BGHK:2015:1211.31K3353.12T.00", ecli_classes.Decision_Other),
-("ECLI:DE:BGHMS:2015:1105.18K2010.14T.00", ecli_classes.Decision_Other),
-("ECLI:DE:BGHK:2004:0112.37K5252.02T.00", ecli_classes.Decision_Other),
-("ECLI:DE:BGANRW:2017:1012.32K6610.17S.00", ecli_classes.Decision_Other),
-("ECLI:DE:BGINRW:2009:0217.36K3999.07U.00", ecli_classes.Decision_Other),
-("ECLI:DE:VGWIESB:2020:0318.3L514.18.WI.00", ecli_classes.Decision_Other),
-("ECLI:DE:VGK:2013:1018.5K1903.12A.00", ecli_classes.Decision_Other),
-("ECLI:DE:VGK:2015:0211.33L2274.14PVB.00", ecli_classes.Decision_Other),
-("ECLI:DE:VGBAYRE:2005:0607.B1K04.1182.0A", ecli_classes.Decision_Other),
-#("ECLI:DE:VGBAYR:2005:0607.B1K04.1182.0A", ecli_classes.Decision_Other) # ACHTUNG UNGÜLTIG! Nicht vorhandener Gerichtscode. Darf hier noch matchen
+("ECLI:DE:BGH:2016:180216URISTR1.15.0", parse_ecli.Decision_BGH),
+("ECLI:DE:BVERFG:2020:RK20200225.1BVR128217", parse_ecli.Decision_BVerfG),
+("ECLI:DE:BPATG:2020:260320B26WPAT46.17.0", parse_ecli.Decision_BPatG),
+("ECLI:DE:BPATG:2016:120716U3LIR5.15.0", parse_ecli.Decision_BPatG),
+("ECLI:DE:BPATG:2017:310617U2NI13.16.0", parse_ecli.Decision_BPatG),
+("ECLI:DE:BAG:2020:270220.B.2AZN1389.19.0", parse_ecli.Decision_BAG),
+("ECLI:DE:BAG:2020:210120.U.3AZR73.19.0", parse_ecli.Decision_BAG),
+("ECLI:DE:BAG:2020:270220.B.GS1389.19.0", parse_ecli.Decision_BAG), # Fiktiv zum Test von GS (matcht auch ohne Senat)
+("ECLI:DE:BFH:2019:U.180919.IIIR3.19.0", parse_ecli.Decision_BFH),
+("ECLI:DE:BFH:2019:U.111219.XIR13.18.0", parse_ecli.Decision_BFH),
+("ECLI:DE:ARBGD:2018:0824.4CA3038.18.00", parse_ecli.Decision_Other),
+("ECLI:DE:VGKASSE:2020:0406.3L348.20.KS.00", parse_ecli.Decision_Other),
+("ECLI:DE:LAGK:2005:0713.8SA796.04.00", parse_ecli.Decision_Other),
+("ECLI:DE:LAGHAM:2011:0412.19SA1951.10.00", parse_ecli.Decision_Other),
+("ECLI:DE:VGGE:2011:0124.12K5288.09.00", parse_ecli.Decision_Other),
+("ECLI:DE:VGD:2010:1217.13K4888.10.00", parse_ecli.Decision_Other),
+("ECLI:DE:VGAC:2012:0314.8K1740.06.00", parse_ecli.Decision_Other),
+("ECLI:DE:VGMI:2011:0808.3K816.11.00", parse_ecli.Decision_Other),
+("ECLI:DE:OVGNRW:2020:0421.9A287.19.00", parse_ecli.Decision_Other),
+("ECLI:DE:VGAC:2020:0415.3L2.20.00", parse_ecli.Decision_Other),
+("ECLI:DE:SGAC:2012:0120.S19SO109.11.00", parse_ecli.Decision_Other),
+("ECLI:DE:SGDT:2020:0218.S14U153.14.00", parse_ecli.Decision_Other),
+("ECLI:DE:SGDU:2020:0214.S44KR379.17.00", parse_ecli.Decision_Other),
+("ECLI:DE:SGDO:2020:0204.S17U237.18.00", parse_ecli.Decision_Other),
+("ECLI:DE:SGGE:2019:0807.S46KR70.17.00", parse_ecli.Decision_Other),
+("ECLI:DE:LSGNRW:2019:1216.L8BA4.18B.ER.00", parse_ecli.Decision_Other),
+("ECLI:DE:LSGNRW:2019:1205.L7AS1764.18.00", parse_ecli.Decision_Other),
+("ECLI:DE:FGD:2020:0325.11V3249.19A.AO.00", parse_ecli.Decision_Other),
+("ECLI:DE:FGMS:2020:0305.5K1670.17U.00", parse_ecli.Decision_Other),
+("ECLI:DE:FGD:2020:0205.4K3554.18Z.00", parse_ecli.Decision_Other),
+("ECLI:DE:FGD:2020:0128.10K2166.16E.00", parse_ecli.Decision_Other),
+("ECLI:DE:FGK:2020:0124.1K1041.17.00", parse_ecli.Decision_Other),
+("ECLI:DE:FGMS:2020:0121.6K1384.18G.F.00", parse_ecli.Decision_Other),
+("ECLI:DE:FGMS:2020:0121.11V3213.19AO.00", parse_ecli.Decision_Other),
+("ECLI:DE:LGSI:2012:0316.2O219.11.00", parse_ecli.Decision_Other),
+("ECLI:DE:OLGHAM:2012:0417.III3RVS24.12.00", parse_ecli.Decision_Other),
+("ECLI:DE:AGK:2005:0609.129C70.04.00", parse_ecli.Decision_Other),
+("ECLI:DE:OLGHAM:2020:0416.4WS72.20.00", parse_ecli.Decision_Other),
+("ECLI:DE:OLGD:2020:0330.2RBS47.20.00", parse_ecli.Decision_Other),
+("ECLI:DE:OLGK:2020:0327.1U95.19.00", parse_ecli.Decision_Other),
+("ECLI:DE:OLGHAM:2020:0326.2AUSL15.19.00", parse_ecli.Decision_Other),
+("ECLI:DE:OLGK:2020:0324.4U235.19.00", parse_ecli.Decision_Other),
+("ECLI:DE:OLGHAM:2020:0319.4RVS25.20.00", parse_ecli.Decision_Other),
+("ECLI:DE:OLGD:2020:0205.VERG21.19.00", parse_ecli.Decision_Other),
+("ECLI:DE:OLGK:2020:0205.5W1.20.00", parse_ecli.Decision_Other),
+("ECLI:DE:OLGD:2020:0121.I21U46.19.00", parse_ecli.Decision_Other),
+("ECLI:DE:LGKLE:2020:0320.140AR1.20.00", parse_ecli.Decision_Other),
+("ECLI:DE:LGK:2020:0317.11S33.19.00", parse_ecli.Decision_Other),
+("ECLI:DE:LGK:2020:0311.84O204.19.00", parse_ecli.Decision_Other),
+("ECLI:DE:LGDO:2020:0304.8O2.20KART.00", parse_ecli.Decision_Other),
+("ECLI:DE:LGMG:2020:0302.4S147.19.00", parse_ecli.Decision_Other),
+("ECLI:DE:LGBN:2020:0228.1O21.19.00", parse_ecli.Decision_Other),
+("ECLI:DE:LGE:2020:0225.17O168.19.00", parse_ecli.Decision_Other),
+("ECLI:DE:AGK:2020:0310.120C166.19.00", parse_ecli.Decision_Other),
+("ECLI:DE:AGRE1:2020:0225.60XIV.L28.20U.00", parse_ecli.Decision_Other),
+("ECLI:DE:AGAC1:2020:0213.107C301.19.01", parse_ecli.Decision_Other),
+("ECLI:DE:AGMS:2020:0211.96C170.20.00", parse_ecli.Decision_Other),
+("ECLI:DE:AGKLE1:2020:0123.35C360.19.00", parse_ecli.Decision_Other),
+("ECLI:DE:AGDO:2020:0121.729DS060JS513.19.00", parse_ecli.Decision_Other),
+("ECLI:DE:VFGHNRW:2020:0415.VERFGH30.20VB2.00", parse_ecli.Decision_Other),
+("ECLI:DE:MSCHOGK:2011:1025.3U8.11BSCHMO.00", parse_ecli.Decision_Other),
+("ECLI:DE:SCHGMI:2007:0821.21C143.07BSCH.00", parse_ecli.Decision_Other),
+("ECLI:DE:RSCHGDU:2012:0125.5C8.11BSCH.00", parse_ecli.Decision_Other),
+("ECLI:DE:RSCHOGK:2018:1122.3U74.17BSCHRH.00", parse_ecli.Decision_Other),
+("ECLI:DE:BGHK:2015:1211.31K3353.12T.00", parse_ecli.Decision_Other),
+("ECLI:DE:BGHMS:2015:1105.18K2010.14T.00", parse_ecli.Decision_Other),
+("ECLI:DE:BGHK:2004:0112.37K5252.02T.00", parse_ecli.Decision_Other),
+("ECLI:DE:BGANRW:2017:1012.32K6610.17S.00", parse_ecli.Decision_Other),
+("ECLI:DE:BGINRW:2009:0217.36K3999.07U.00", parse_ecli.Decision_Other),
+("ECLI:DE:VGWIESB:2020:0318.3L514.18.WI.00", parse_ecli.Decision_Other),
+("ECLI:DE:VGK:2013:1018.5K1903.12A.00", parse_ecli.Decision_Other),
+("ECLI:DE:VGK:2015:0211.33L2274.14PVB.00", parse_ecli.Decision_Other),
+("ECLI:DE:VGBAYRE:2005:0607.B1K04.1182.0A", parse_ecli.Decision_Other),
+#("ECLI:DE:VGBAYR:2005:0607.B1K04.1182.0A", parse_ecli.Decision_Other) # ACHTUNG UNGÜLTIG! Nicht vorhandener Gerichtscode. Darf hier noch matchen
 
 ]
 
@@ -109,13 +109,13 @@ test_ecli_strings_fail = [
 
 @pytest.mark.parametrize("test_ecli_string, expected", test_ecli_strings)
 def test_match_ecli(test_ecli_string, expected):
-    x = ecli_classes.match_ecli(test_ecli_string)
+    x = parse_ecli.match_ecli(test_ecli_string)
     assert isinstance(x, expected)
 
 @pytest.mark.parametrize("test_ecli_string_fail", test_ecli_strings_fail)
 def test_match_ecli_fail(test_ecli_string_fail):
-    with pytest.raises(ecli_classes.NoValidECLIError):
-        ecli_classes.match_ecli(test_ecli_string_fail)
+    with pytest.raises(parse_ecli.NoValidECLIError):
+        parse_ecli.match_ecli(test_ecli_string_fail)
 
 ##########
 # BVerfG
@@ -141,7 +141,7 @@ test_court_data_bverfg_fail = [
 
 @pytest.mark.parametrize("bverfg_input, expected", test_court_data_bverfg)
 def test_bverfg_parse(bverfg_input, expected):
-    bverfg = ecli_classes.Decision_BVerfG(bverfg_input)
+    bverfg = parse_ecli.Decision_BVerfG(bverfg_input)
     match = re.match(pattern.bverfg_compiled, bverfg_input)
     bverfg.parse_ecli(match)
     assert bverfg.court_data["court"][1] == expected[0]
@@ -154,10 +154,10 @@ def test_bverfg_parse(bverfg_input, expected):
 
 @pytest.mark.parametrize("test_court_data_bverfg_fail", test_court_data_bverfg_fail)
 def test_bverfg_fail(test_court_data_bverfg_fail):
-    bverfg = ecli_classes.Decision_BVerfG(test_court_data_bverfg_fail)
+    bverfg = parse_ecli.Decision_BVerfG(test_court_data_bverfg_fail)
     match = re.match(pattern.bverfg_compiled, test_court_data_bverfg_fail)
 
-    with pytest.raises((KeyError, ecli_classes.InValidAZError)):
+    with pytest.raises((KeyError, parse_ecli.InValidAZError)):
         bverfg.parse_ecli(match)
 
 ##########
@@ -184,7 +184,7 @@ test_court_data_bgh_fail = [
 
 @pytest.mark.parametrize("bgh_input, expected", test_court_data_bgh)
 def test_bgh_parse_1(bgh_input, expected):
-    bgh = ecli_classes.Decision_BGH(bgh_input)
+    bgh = parse_ecli.Decision_BGH(bgh_input)
     match = re.match(pattern.bgh_compiled, bgh_input)
     bgh.parse_ecli(match)
     assert bgh.court_data["court"][1] == expected[0]
@@ -198,10 +198,10 @@ def test_bgh_parse_1(bgh_input, expected):
 
 @pytest.mark.parametrize("test_court_data_bgh_fail", test_court_data_bgh_fail)
 def test_bgh_fail(test_court_data_bgh_fail):
-    bgh = ecli_classes.Decision_BGH(test_court_data_bgh_fail)
+    bgh = parse_ecli.Decision_BGH(test_court_data_bgh_fail)
     match = re.match(pattern.bgh_compiled, test_court_data_bgh_fail)
 
-    with pytest.raises((KeyError, ecli_classes.InValidAZError)):
+    with pytest.raises((KeyError, parse_ecli.InValidAZError)):
         bgh.parse_ecli(match)
 
 
@@ -219,7 +219,7 @@ test_court_data_bpatg = [
 
 @pytest.mark.parametrize("bpatg_input, expected", test_court_data_bpatg)
 def test_bpatg_parse_1(bpatg_input, expected):
-    bpatg = ecli_classes.Decision_BPatG(bpatg_input)
+    bpatg = parse_ecli.Decision_BPatG(bpatg_input)
     match = re.match(pattern.bpatg_compiled, bpatg_input)
     bpatg.parse_ecli(match)
     assert bpatg.court_data["court"][1] == expected[0]
@@ -264,7 +264,7 @@ test_court_data_laender_fail = [
 
 @pytest.mark.parametrize("input, expected", test_court_data_laender)
 def test_laender_parse_1(input, expected):
-    laender = ecli_classes.Decision_Other(input)
+    laender = parse_ecli.Decision_Other(input)
     match = re.match(pattern.laender_compiled, input)
     laender.parse_ecli(match)
     assert laender.court_data["court"][1] == expected[0]
@@ -277,10 +277,10 @@ def test_laender_parse_1(input, expected):
 
 @pytest.mark.parametrize("test_court_data_laender_fail", test_court_data_laender_fail)
 def test_laender_fail(test_court_data_laender_fail):
-    laender = ecli_classes.Decision_Other(test_court_data_laender_fail)
+    laender = parse_ecli.Decision_Other(test_court_data_laender_fail)
     match = re.match(pattern.laender_compiled, test_court_data_laender_fail)
 
-    with pytest.raises((KeyError, ecli_classes.InValidAZError)):
+    with pytest.raises((KeyError, parse_ecli.InValidAZError)):
         laender.parse_ecli(match)
 
 ##########
@@ -301,7 +301,7 @@ test_court_data_bverwg_fail = [
 
 @pytest.mark.parametrize("bverwg_input, expected", test_court_data_bverwg)
 def test_bverwg_parse(bverwg_input, expected):
-    bverwg = ecli_classes.Decision_BVerwG(bverwg_input)
+    bverwg = parse_ecli.Decision_BVerwG(bverwg_input)
     match = re.match(pattern.bverwg_compiled, bverwg_input)
     bverwg.parse_ecli(match)
     assert bverwg.court_data["court"][1] == expected[0]
@@ -314,8 +314,8 @@ def test_bverwg_parse(bverwg_input, expected):
 
 @pytest.mark.parametrize("test_court_data_bverwg_fail", test_court_data_bverwg_fail)
 def test_bverwg_fail(test_court_data_bverwg_fail):
-    bverwg = ecli_classes.Decision_BVerwG(test_court_data_bverwg_fail)
+    bverwg = parse_ecli.Decision_BVerwG(test_court_data_bverwg_fail)
     match = re.match(pattern.bverwg_compiled, test_court_data_bverwg_fail)
 
-    with pytest.raises((KeyError, ecli_classes.InValidAZError)):
+    with pytest.raises((KeyError, parse_ecli.InValidAZError)):
         bverwg.parse_ecli(match)

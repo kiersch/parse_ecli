@@ -1,0 +1,3 @@
+include parse_ecli/gerichte.json
+include parse_ecli/decisions.json
+include README.md
