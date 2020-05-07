@@ -564,6 +564,7 @@ def main_func():
                         help='Angabe einer Datei, in welche die Ausgabe geschrieben werden soll. Erzeugt mit -r eine .csv'))
     (parser.add_argument('-r', '--raw', action='store_true',
                         help='Ausgabe der analysierten Bestandteile ohne weitere Beschriftung, durch Semikolon getrennt'))
+    (parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.9.2'))                        
     args, args2 = parser.parse_known_args()
 
     ecli_list = []
