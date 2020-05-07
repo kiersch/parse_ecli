@@ -6,7 +6,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='parse_ecli',
-      version='0.9',
+      version='0.9.1',
       description='Parse German ECLI',
       long_description=long_description,
       long_description_content_type="text/markdown",
@@ -22,7 +22,8 @@ setup(name='parse_ecli',
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Intended Audience :: Legal Industry",
-        "Topic :: Text Processing :: Filters"
+        "Topic :: Text Processing :: Filters",
+        'Topic :: Text Processing :: Linguistic',
         ],
         include_package_data=True,
         entry_points={
