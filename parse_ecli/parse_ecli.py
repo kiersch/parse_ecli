@@ -10,7 +10,7 @@ def match_ecli(ecli_string):
 # Nutzt die in PEP572 eingeführten Assignment Expression, da für die Behandlung von REGEX
 # besonders geeignet, vgl. https://www.python.org/dev/peps/pep-0572/#syntax-and-semantics
 
-    ecli_string = ecli_string.upper().strip(' .:/()')
+    ecli_string = ecli_string.upper().strip(' .:/()\n')
 
     if (match := re.match(pattern.laender_compiled, ecli_string)) is not None:
         decision = Decision_Other(ecli_string)
@@ -564,23 +564,24 @@ def main_func():
                         help='Angabe einer Datei, in welche die Ausgabe geschrieben werden soll. Erzeugt mit -r eine .csv'))
     (parser.add_argument('-r', '--raw', action='store_true',
                         help='Ausgabe der analysierten Bestandteile ohne weitere Beschriftung, durch Semikolon getrennt'))
-    (parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.9.2'))                        
+    (parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.9.3'))
     args, args2 = parser.parse_known_args()
 
     ecli_list = []
+    match_list = []
 
     if args.input_file is not None:
         # Falls mit -i eine Datei angegeben wurde:
-        ecli_file_string = Path(args.input_file)
+        input_file_string = Path(args.input_file)
         try:
-            with open(ecli_file_string) as input:
-                lines = input.readlines()
+            with open(input_file_string) as input_file:
+                lines = input_file.readlines()
                 for line in lines:
                     # Alle Zeilen, die nicht mit ECLI:DE: beginnen, werden ignoriert.
                     if line.upper().startswith("ECLI:DE:"):
                         ecli_list.append(line)
         except FileNotFoundError:
-            print(f"Datei {ecli_file_string} existiert nicht!")
+            print(f"Datei {input_file_string} existiert nicht!")
     else:
         parser2 = argparse.ArgumentParser()
         parser2.add_argument('ecli', metavar='ECLI', help='Der zu überprüfende ECLI')
@@ -596,18 +597,23 @@ def main_func():
         for ecli_string in ecli_list:
             try:
                 my_decision = match_ecli(ecli_string)
-                if args.output_file is not None:
-                    output_file_string = Path(args.output_file)
-                    if output_file_string.exists():
-                        print()
-                        overwrite = input(f"Datei {output_file_string} existiert bereits. Überschreiben? (j/n)\n")
-                        if overwrite.lower() == 'j':
-                            with open(args.output_file, mode="w", encoding="utf-8") as f:
-                                my_decision.output_decision(args.raw, f)
-                    else:
-                        with open(args.output_file, mode="w", encoding="utf-8") as f:
-                                my_decision.output_decision(args.raw, f)
-                else:
-                    my_decision.output_decision(args.raw)
+                match_list.append(my_decision)
             except (NoValidECLIError, InValidAZError, InValidCourtError) as e:
                 exception_print(e)
+
+        if args.output_file is not None:
+            output_file_string = Path(args.output_file)
+            if output_file_string.exists():
+                overwrite = input("Datei existiert bereits. Überschreiben? (j/n): ")
+                if overwrite.lower() == 'j':
+                    with open(args.output_file, mode="w", encoding="utf-8") as f:
+                        for decision in match_list:
+                            decision.output_decision(args.raw, f)
+                        print("Datei überschrieben")
+            else:
+                with open(args.output_file, mode="w", encoding="utf-8") as f:
+                    for decision in match_list:
+                        decision.output_decision(args.raw, f)
+        else:
+            for decision in match_list:
+                decision.output_decision(args.raw)
