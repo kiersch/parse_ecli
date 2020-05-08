@@ -551,6 +551,22 @@ def exception_print(e):
     print(e)
     print("#\n#\n####################################################\n\n")
 
+def write_to_file(match_list, output_file_arg, rawmode=False):
+    output_file_path = Path(output_file_arg)
+    if output_file_path.exists():
+        overwrite = input("Datei existiert bereits. Überschreiben? (j/n): ")
+        if overwrite.lower() == 'j' or overwrite.lower() == 'y':
+            with open(output_file_path, mode="w", encoding="utf-8") as f:
+                for decision in match_list:
+                    decision.output_decision(rawmode, f)
+                print("Datei überschrieben")
+        else:
+            print("Abbruch")
+    else:
+        with open(output_file_path, mode="w", encoding="utf-8") as f:
+            for decision in match_list:
+                decision.output_decision(rawmode, f)
+
 
 def main_func():
     # Der folgende Abschnitt dient zur Erfassung der Eingabe über die Kommandozeile
@@ -564,7 +580,7 @@ def main_func():
                         help='Angabe einer Datei, in welche die Ausgabe geschrieben werden soll. Erzeugt mit -r eine .csv'))
     (parser.add_argument('-r', '--raw', action='store_true',
                         help='Ausgabe der analysierten Bestandteile ohne weitere Beschriftung, durch Semikolon getrennt'))
-    (parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.9.3'))
+    (parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.9.4'))
     args, args2 = parser.parse_known_args()
 
     ecli_list = []
@@ -602,18 +618,7 @@ def main_func():
                 exception_print(e)
 
         if args.output_file is not None:
-            output_file_string = Path(args.output_file)
-            if output_file_string.exists():
-                overwrite = input("Datei existiert bereits. Überschreiben? (j/n): ")
-                if overwrite.lower() == 'j':
-                    with open(args.output_file, mode="w", encoding="utf-8") as f:
-                        for decision in match_list:
-                            decision.output_decision(args.raw, f)
-                        print("Datei überschrieben")
-            else:
-                with open(args.output_file, mode="w", encoding="utf-8") as f:
-                    for decision in match_list:
-                        decision.output_decision(args.raw, f)
+            write_to_file(match_list, args.output_file, args.raw)
         else:
             for decision in match_list:
                 decision.output_decision(args.raw)
