@@ -21,7 +21,7 @@ import re
 ##################
 
 bverfg = r"""
-    ^(?P<ecli>ECLI):
+    (?P<ecli>ECLI):
     (?P<country>DE):
     (?P<court>BVERFG):
     (?P<year>(?:19|20)[0-9]{2}): # Jahresbereich eingeschränkt auf 1900-2000
@@ -32,12 +32,12 @@ bverfg = r"""
     (?P<az>(?P<azbody>\d)? # azbody optional bei Verzögerungsbeschwerden
     (?P<azreg>[A-Z]{2,4})
     (?P<aznumber>\d{4})
-    (?P<azyear>\d{2}))$
+    (?P<azyear>\d{2}))
 """
 
 
 bgh = r"""
-    ^(?P<ecli>ECLI):
+    (?P<ecli>ECLI):
     (?P<country>DE):
     (?P<court>BGH):
     (?P<year>(?:19|20)[0-9]{2}): # Jahresbereich eingeschränkt auf 1900-2000
@@ -47,11 +47,11 @@ bgh = r"""
     (?P<azreg>[.A-Z]{2,11}) # Registerzeichen. Klammern werden im ECLI als Punkte dargestellt
     (?P<aznumber>\d{1,4})\. # Eingangsnummer
     (?P<azyear>\d{2})\.
-    (?P<collision>\d)$ # Stets vorhanden
+    (?P<collision>\d) # Stets vorhanden
 """
 
 bpatg = r"""
-    ^(?P<ecli>ECLI):
+    (?P<ecli>ECLI):
     (?P<country>DE):
     (?P<court>BPATG):
     (?P<year>(?:19|20)[0-9]{2}):
@@ -62,11 +62,11 @@ bpatg = r"""
     (?P<aznumber>\d{1,4})\.
     (?P<azyear>\d{2})
     (?P<azsuffix>EP|EU)?\.
-    (?P<collision>\d)$
+    (?P<collision>\d)
 """
 
 bverwg = r"""
-    ^(?P<ecli>ECLI):
+    (?P<ecli>ECLI):
     (?P<country>DE):
     (?P<court>BVERWG):
     (?P<year>(?:19|20)[0-9]{2}):
@@ -76,11 +76,11 @@ bverwg = r"""
     (?P<azreg>[()A-Z]{1,11})
     (?P<aznumber>\d{1,4})\.
     (?P<azyear>\d{2})\.
-    (?P<collision>\d)$
+    (?P<collision>\d)
 """
 
 bfh = r"""
-    ^(?P<ecli>ECLI):
+    (?P<ecli>ECLI):
     (?P<country>DE):
     (?P<court>BFH):
     (?P<year>(?:19|20)[0-9]{2}):
@@ -90,11 +90,11 @@ bfh = r"""
     (?P<azreg>[()A-Z]{1,11})
     (?P<aznumber>\d{1,4})\.
     (?P<azyear>\d{2})\.
-    (?P<collision>\d)$
+    (?P<collision>\d)
 """
 
 bag = r"""
-    ^(?P<ecli>ECLI):
+    (?P<ecli>ECLI):
     (?P<country>DE):
     (?P<court>BAG):
     (?P<year>(?:19|20)[0-9]{2}):
@@ -104,11 +104,11 @@ bag = r"""
     (?P<azreg>(?(azbody)[AZRBVN]{3}|GS)) # Bei GS gibt es keine Senatsbezeichnung. Wenn (und nur dann) diese fehlt, wird "GS" gemachtcht (conditional)
     (?P<aznumber>\d{1,4})\.
     (?P<azyear>\d{2})\.
-    (?P<collision>\d)$
+    (?P<collision>\d)
 """
 
 bsg = r"""
-    ^(?P<ecli>ECLI):
+    (?P<ecli>ECLI):
     (?P<country>DE):
     (?P<court>BSG):
     (?P<year>(?:19|20)[0-9]{2}):
@@ -120,17 +120,17 @@ bsg = r"""
     (?P<aznumber>\d{1,4}?)
     (?P<azyear>\d{2})
     (?P<azregister>[A-Z]{1,2})?
-    (?P<collision>\d)$
+    (?P<collision>\d)
 """
 
 laender = r"""
-    ^(?P<ecli>ECLI):
+    (?P<ecli>ECLI):
     (?P<country>DE):
     (?P<court>\w{2,7}):
     (?P<year>(?:19|20)[0-9]{2}):
     (?P<date>(?:0[1-9]|1[012])(?:0[1-9]|[12][0-9]|3[01]))\.
-    (?P<az>[\dA-Z\.]{4,17})\.
-    (?P<collision>[\dA-Z]{2})$
+    (?P<az>[\dA-Z\.]{2,15}\.[\dA-Z]{1,15})\.
+    (?P<collision>[\dA-Z]{2})
 """
 
 
