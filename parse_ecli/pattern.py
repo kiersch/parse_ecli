@@ -32,7 +32,7 @@ bverfg = r"""
     (?P<az>(?P<azbody>\d)? # azbody optional bei Verzögerungsbeschwerden
     (?P<azreg>[A-Z]{2,4})
     (?P<aznumber>\d{4})
-    (?P<azyear>\d{2}))
+    (?P<azyear>\d{2}))\b
 """
 
 
@@ -47,7 +47,7 @@ bgh = r"""
     (?P<azreg>[.A-Z]{2,11}) # Registerzeichen. Klammern werden im ECLI als Punkte dargestellt
     (?P<aznumber>\d{1,4})\. # Eingangsnummer
     (?P<azyear>\d{2})\.
-    (?P<collision>\d) # Stets vorhanden
+    (?P<collision>\d)\b # Stets vorhanden
 """
 
 bpatg = r"""
@@ -62,7 +62,7 @@ bpatg = r"""
     (?P<aznumber>\d{1,4})\.
     (?P<azyear>\d{2})
     (?P<azsuffix>EP|EU)?\.
-    (?P<collision>\d)
+    (?P<collision>\d)\b
 """
 
 bverwg = r"""
@@ -76,7 +76,7 @@ bverwg = r"""
     (?P<azreg>[()A-Z]{1,11})
     (?P<aznumber>\d{1,4})\.
     (?P<azyear>\d{2})\.
-    (?P<collision>\d)
+    (?P<collision>\d)\b
 """
 
 bfh = r"""
@@ -90,7 +90,7 @@ bfh = r"""
     (?P<azreg>[()A-Z]{1,11})
     (?P<aznumber>\d{1,4})\.
     (?P<azyear>\d{2})\.
-    (?P<collision>\d)
+    (?P<collision>\d)\b
 """
 
 bag = r"""
@@ -104,7 +104,7 @@ bag = r"""
     (?P<azreg>(?(azbody)[AZRBVN]{3}|GS)) # Bei GS gibt es keine Senatsbezeichnung. Wenn (und nur dann) diese fehlt, wird "GS" gemachtcht (conditional)
     (?P<aznumber>\d{1,4})\.
     (?P<azyear>\d{2})\.
-    (?P<collision>\d)
+    (?P<collision>\d)\b
 """
 
 bsg = r"""
@@ -120,7 +120,7 @@ bsg = r"""
     (?P<aznumber>\d{1,4}?)
     (?P<azyear>\d{2})
     (?P<azregister>[A-Z]{1,2})?
-    (?P<collision>\d)
+    (?P<collision>\d)\b
 """
 
 laender = r"""
@@ -130,7 +130,7 @@ laender = r"""
     (?P<year>(?:19|20)[0-9]{2}):
     (?P<date>(?:0[1-9]|1[012])(?:0[1-9]|[12][0-9]|3[01]))\.
     (?P<az>[\dA-Z\.]{2,15}\.[\dA-Z]{1,15})\.
-    (?P<collision>[\dA-Z]{2})
+    (?P<collision>[\dA-Z]{2})\b
 """
 
 

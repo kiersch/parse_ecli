@@ -1,3 +1,5 @@
+from __future__ import annotations
+from typing import Type
 import json
 import re
 import argparse
@@ -5,7 +7,8 @@ import sys
 from pathlib import Path
 from parse_ecli import pattern
 
-def match_ecli(ecli_string):
+
+def match_ecli(ecli_string: string) -> Type[Decision]:
     """Bestimmt, welche Klasse (=Gericht) auf den ECLI passt."""
 # Reihenfolge der Überprüfung nach geschätzter Häufgikeit der Entscheidungen.
 # Nutzt die in PEP572 eingeführten Assignment Expression, da für die Behandlung von REGEX
@@ -76,7 +79,6 @@ def search_ecli(ecli_string):
     if re.search(pattern.laender_compiled, ecli_string) is not None:
         laender_iter = re.finditer(pattern.laender_compiled, ecli_string)
         for match in laender_iter:
-            print(match.start())
             try:
                 decision = Decision_Other(match.group())
                 decision.parse_ecli(match)
@@ -168,7 +170,7 @@ class Decision:
     def __init__(self, ecli_string):
         """Initialize ECLI"""
         self.ecli = ecli_string
-
+        self.position = 0
         self.court_data = {
             # Diese Daten sollen mithilfe des ECLI aufgefüllt werden.
             # Nicht alle werden von allen Entscheidungstypen genutzt
@@ -264,6 +266,7 @@ class Decision_BVerfG(Decision):
         return url
 
     def parse_ecli(self, match):
+
         """Füllt die Daten für BVerfG-Entscheidungen auf Grundlage des ECLI aus"""
         self.court_data["court"][1] = "BVerfG" # Dies steht fest, da sonst kein Regex-Match
         self.court_data["decisiontype"][1] = self.loaded_data["bverfg_decisiontype"][match.group("type")]
@@ -316,6 +319,7 @@ class Decision_BGH(Decision):
 
     def parse_ecli(self, match):
 
+
         self.court_data["court"][1] = "BGH"
         self.court_data["decisiontype"][1] = self.loaded_data["bgh_decisiontype"][match.group("type")]
         self.court_data["date"][1] = match.group("date")[0:2] + "." + match.group("date")[2:4] + "." + match.group("year")
@@ -357,6 +361,7 @@ class Decision_BVerwG(Decision):
 
     def parse_ecli(self, match):
 
+
         self.court_data["court"][1] = "BVerwG"
         self.court_data["decisiontype"][1] = self.loaded_data["bverwg_decisiontype"][match.group("type")]
         self.court_data["date"][1] = match.group("date")[0:2] + "." + match.group("date")[2:4] + "." + match.group("year")
@@ -381,6 +386,7 @@ class Decision_BFH(Decision):
 
     def parse_ecli(self, match):
 
+
         self.court_data["court"][1] = "BFH"
         self.court_data["decisiontype"][1] = self.loaded_data["bfh_decisiontype"][match.group("type")]
         self.court_data["date"][1] = match.group("date")[0:2] + "." + match.group("date")[2:4] + "." + match.group("year")
@@ -393,6 +399,7 @@ class Decision_BFH(Decision):
 
 class Decision_BPatG(Decision):
     def parse_ecli(self, match):
+
 
         self.court_data["court"][1] = "BPatG"
         self.court_data["decisiontype"][1] = self.loaded_data["bpatg_decisiontype"][match.group("type")]
@@ -408,6 +415,7 @@ class Decision_BPatG(Decision):
 class Decision_BAG(Decision):
     def parse_ecli(self, match):
 
+
         self.court_data["court"][1] = "BAG"
         # Hier kann auf BVerwG zurückgegriffen werden, da Schnittmenge identisch
         self.court_data["decisiontype"][1] = self.loaded_data["bverwg_decisiontype"][match.group("type")]
@@ -420,6 +428,7 @@ class Decision_BAG(Decision):
 
 class Decision_BSG(Decision):
     def parse_ecli(self, match):
+
 
         self.court_data["court"][1] = "BSG"
         self.court_data["decisiontype"][1] = self.loaded_data["bpatg_decisiontype"][match.group("type")]
@@ -515,12 +524,20 @@ class Decision_Other(Decision):
             if azreg_sta != '':
                 azreg_sta = self.loaded_data["ordentliche_az"][azreg_sta]
             azsuffix = super().check_azpart_empty(az_match.group("azsuffix"))
-
-            az = (azprefix + " " + azbody + " " + self.loaded_data["ordentliche_az"][az_match.group("azreg").replace(".","")]
+            azreg = az_match.group("azreg")
+            if az_match.group("azreg") in self.loaded_data["ordentliche_az"]:
+                azreg = self.loaded_data["ordentliche_az"][az_match.group("azreg").replace(".","")]
+            az = (azprefix + " " + azbody + " " + azreg
                     + " " + azbody_sta + " " + azreg_sta + " "  + az_match.group("aznumber").lstrip("0") + "/" + az_match.group("azyear")
                     + " " + azsuffix).strip() # Strip bezieht sich auf den gesamten String, der az zugewiesen wird!
             az = re.sub(r"\s\s+" , " ", az)
-            decision_explain = self.loaded_data["ordentliche_explain"][az_match.group("azreg").replace(".","")]
+            if az_match.group("azreg") in self.loaded_data["ordentliche_explain"]:
+                decision_explain = self.loaded_data["ordentliche_explain"][az_match.group("azreg").replace(".","")]
+            else:
+                # Dies bedeutet im Zweifel keinen ungültigen ECLI, deshalb keine Exception, sondern nur
+                # Information
+                decision_explain = "Unbekanntes Registerzeichen!"
+
             return az, decision_explain
         else:
             raise InValidAZError("Ungültiges Aktenzeichen!")
@@ -648,14 +665,14 @@ def get_input(input_file_string, batchmode=False):
         with open(input_file_string, encoding="utf8") as input_file:
             if batchmode:
                 lines = input_file.readlines()
-                for line in lines:
+                for index, line in enumerate(lines):
                     # Alle Zeilen, die nicht mit ECLI:DE: beginnen, werden ignoriert.
                     if line.upper().startswith("ECLI:DE:"):
-                        ecli_list.append(line)
+                        ecli_list.append([line, index])
                 return ecli_list
             else:
                 input_file_content = input_file.read()
-                ecli_list.append(input_file_content.upper())
+                ecli_list.append([input_file_content.upper(),])
                 return ecli_list
     except FileNotFoundError:
         print(f"Datei {input_file_string} existiert nicht!")
@@ -674,9 +691,52 @@ def write_to_file(match_list, output_file_arg, rawmode=False):
             print("Abbruch")
             sys.exit(0)
     else:
-        with open(output_file_path, mode="w", encoding="utf-8") as f:
+        try:
+            with open(output_file_path, mode="w", encoding="utf-8") as f:
+                for decision in match_list:
+                    decision.output_decision(rawmode, f)
+        except FileNotFoundError as e:
+            print(f"Dateiname/-pfad ungültig: {e}")
+
+def read_from_file_mode(input_file_string, output_file_string=None, raw=False, batch=False):
+    ecli_list = []
+    match_list = []
+    ecli_list = get_input(input_file_string, batch)
+    if len(ecli_list) == 0:
+        print("Keine ECLI gefunden!")
+    else:
+        if batch:
+            print(f"{len(ecli_list)} Zeilen gefunden, die mit ECLI:DE: beginnen.")
+            for ecli_list_entry in ecli_list:
+                try:
+                    my_decision = match_ecli(ecli_list_entry[0])
+                    index = ecli_list_entry[1]
+                    match_list.append(my_decision)
+                except (NoValidECLIError, InValidAZError, InValidCourtError) as e:
+                    print(f"Ignoriere ungültigen ECLI in Zeile {index}: {e}.")
+            print(f"Insgesamt waren {len(match_list)} von {len(ecli_list)} erkannten ECLI gültig.")
+        else:
+            match_list = search_ecli(ecli_list[0][0])
+            print(f"{len(match_list)} gültige ECLI gefunden.")
+
+        if output_file_string is not None:
+            write_to_file(match_list, output_file_string, raw)
+        else:
             for decision in match_list:
-                decision.output_decision(rawmode, f)
+                # print(f"Position: {decision.start()}")
+                decision.output_decision(raw)
+
+
+def commandline_mode(ecli_string, output_file, raw=False):
+    try:
+        my_decision = match_ecli(ecli_string)
+        if output_file is not None:
+            write_to_file(match_list, output_file, raw)
+        else:
+            my_decision.output_decision(raw)
+    except (NoValidECLIError, InValidAZError, InValidCourtError) as e:
+        exception_print(e)
+
 
 
 def main_func():
@@ -692,51 +752,19 @@ def main_func():
     (parser.add_argument('-r', '--raw', action='store_true',
                         help='Ausgabe der analysierten Bestandteile ohne weitere Beschriftung, durch Semikolon getrennt'))
     (parser.add_argument('-b', '--batch', action='store_true',
-                        help='Bei Angabe einer Input-Datei wird nicht nach ECLi gesucht, sondern jede Zeile als ECLI behandelt'))
+                        help='Bei Angabe einer Input-Datei wird nicht nach ECLI gesucht, sondern jede Zeile als ECLI behandelt'))
     (parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.9.4'))
     args, args2 = parser.parse_known_args()
 
-    ecli_string = ""
-    ecli_list = []
-    match_list = []
 
     if args.input_file is not None:
         # Falls mit -i eine Datei angegeben wurde:
-        ecli_list = get_input(args.input_file, args.batch)
-
+        read_from_file_mode(args.input_file, args.output_file, args.raw, args.batch)
     else:
+        # Falls direkt von der Kommandozeile gelesen wird.
         parser2 = argparse.ArgumentParser()
         parser2.add_argument('ecli', metavar='ECLI', help='Der zu überprüfende ECLI')
         # Ansonsten einzelnen ECLI direkt von der Kommandozeile
         args2 = parser2.parse_args(args2)
         ecli_string = args2.ecli.upper().strip(' .:/()')
-        ecli_list.append(ecli_string)
-
-
-    if len(ecli_list) == 0:
-        print("Keine ECLI gefunden!")
-    else:
-        if ecli_string != "":
-            try:
-                my_decision = match_ecli(ecli_string)
-                match_list.append(my_decision)
-            except (NoValidECLIError, InValidAZError, InValidCourtError) as e:
-                exception_print(e)
-        elif args.batch:
-            for ecli_list_string in ecli_list:
-                try:
-                    my_decision = match_ecli(ecli_list_string)
-                    match_list.append(my_decision)
-                except (NoValidECLIError, InValidAZError, InValidCourtError) as e:
-                    exception_print(e)
-        else:
-            match_list = search_ecli(ecli_list[0])
-
-
-        if args.output_file is not None:
-            write_to_file(match_list, args.output_file, args.raw)
-        else:
-            for decision in match_list:
-                # print(f"Position: {decision.start()}")
-                decision.output_decision(args.raw)
-            print(f"Insgesamt {len(match_list)} gültige ECLI gefunden")
+        commandline_mode(ecli_string, args.output_file, args.raw)
