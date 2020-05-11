@@ -3,9 +3,11 @@
 import sys
 import re
 import json
+from pathlib import Path
 from parse_ecli import parse_ecli
 import pytest
 from parse_ecli import pattern
+import unittest.mock
 
 
 
@@ -229,12 +231,89 @@ def test_bpatg_parse_1(bpatg_input, expected):
     assert bpatg.court_data["decisiontype"][1] == expected[4]
     assert bpatg.court_data["decision_explain"][1] == expected[5]
 
+##########
+# BVerwG
+##########
+
+test_court_data_bverwg = [
+    ("ECLI:DE:BVERWG:2016:210416U2C4.15.0", ("BVerwG", "21.04.2016", "2 C 4.15", "0", "Revisionen in Verwaltungsstreitverfahren (§§ 49, 132 VwGO)", "2. Senat", "https://www.bverwg.de/de/210416U2C4.15.0")),
+    ("ECLI:DE:BVERWG:2013:291013U1D1.12.0", ("BVerwG", "29.10.2013", "1 D 1.12", "0", "Berufungsverfahren in Disziplinarsachen", "Disziplinarsenat", "https://www.bverwg.de/de/291013U1D1.12.0")),
+    ("ECLI:DE:BVERWG:2020:170320B20F3.18.0", ("BVerwG", "17.03.2020", "20 F 3.18", "0", "Verwaltungsstreitsachen vor dem Fachsenat wegen der verweigerten Vorlage von Urkunden, Akten oder elektronischen Dokumente sowie der verweigerten Erteilung von Auskünften (§ 99 Abs. 2 VwGO)", "Fachsenat nach § 189 VwGO", "https://www.bverwg.de/de/170320B20F3.18.0")),
+
+]
+
+test_court_data_bverwg_fail = [
+"ECLI:DE:BVERWG:2016:210416U2UU4.15.0", # Ungültiges Registerzeichen BVerfG
+]
+
+
+@pytest.mark.parametrize("bverwg_input, expected", test_court_data_bverwg)
+def test_bverwg_parse(bverwg_input, expected):
+    bverwg = parse_ecli.Decision_BVerwG(bverwg_input)
+    match = re.match(pattern.bverwg_compiled, bverwg_input)
+    bverwg.parse_ecli(match)
+    assert bverwg.court_data["court"][1] == expected[0]
+    assert bverwg.court_data["date"][1] == expected[1]
+    assert bverwg.court_data["az"][1] == expected[2]
+    assert bverwg.court_data["collision"][1] == expected[3]
+    assert bverwg.court_data["decision_explain"][1] == expected[4]
+    assert bverwg.court_data["bodytype"][1] == expected[5]
+    assert bverwg.court_data["url"][1] == expected[6]
+
+@pytest.mark.parametrize("test_court_data_bverwg_fail", test_court_data_bverwg_fail)
+def test_bverwg_fail(test_court_data_bverwg_fail):
+    bverwg = parse_ecli.Decision_BVerwG(test_court_data_bverwg_fail)
+    match = re.match(pattern.bverwg_compiled, test_court_data_bverwg_fail)
+
+    with pytest.raises((KeyError, parse_ecli.InValidAZError)):
+        bverwg.parse_ecli(match)
+
+##########
+# BSG
+##########
+
+test_court_data_bsg = [
+    ("ECLI:DE:BSG:2019:200219BGS1180", ("BSG", "20.02.2019", "GS 1/18", "0", "Verfahren vor dem Großen Senat", "Großer Senat", "Beschluss", "")),
+    ("ECLI:DE:BSG:2019:190919UB12R2518R0", ("BSG", "19.09.2019", "B 12 R 25/18 R", "0", "Gesetzliche Rentenversicherung", "12. Senat", "Urteil", "Revisionsregister")),
+    ("ECLI:DE:BSG:2020:270320UB10UEG419R0", ("BSG", "27.03.2020", "B 10 ÜG 4/19 R", "0", "Rechtsschutz bei überlangen Gerichtsverfahren", "10. Senat", "Urteil", "Revisionsregister")),
+    ("ECLI:DE:BSG:2020:190320UB1KR2019R0", ("BSG", "19.03.2020", "B 1 KR 20/19 R", "0", "Gesetzliche Krankenversicherung", "1. Senat", "Urteil", "Revisionsregister")),
+    ("ECLI:DE:BSG:2020:200220BB14AS919B0", ("BSG", "20.02.2020", "B 14 AS 9/19 B", "0", "Grundsicherung für Arbeitsuchende", "14. Senat", "Beschluss", "Beschwerderegister")),
+    ("ECLI:DE:BSG:2020:110220BB10EG1419B0", ("BSG", "11.02.2020", "B 10 EG 14/19 B", "0", "Elterngeld und Erziehungsgeld", "10. Senat", "Beschluss", "Beschwerderegister")),
+
+]
+
+test_court_data_bsg_fail = [
+"ECLI:DE:BSG:2019:190919U12R2518R0", # Ungültiges Registerzeichen BSG (kein Instanzen-B)
+]
+
+
+@pytest.mark.parametrize("bsg_input, expected", test_court_data_bsg)
+def test_bsg_parse(bsg_input, expected):
+    bsg = parse_ecli.Decision_BSG(bsg_input)
+    match = re.match(pattern.bsg_compiled, bsg_input)
+    bsg.parse_ecli(match)
+    assert bsg.court_data["court"][1] == expected[0]
+    assert bsg.court_data["date"][1] == expected[1]
+    assert bsg.court_data["az"][1] == expected[2]
+    assert bsg.court_data["collision"][1] == expected[3]
+    assert bsg.court_data["decision_explain"][1] == expected[4]
+    assert bsg.court_data["bodytype"][1] == expected[5]
+    assert bsg.court_data["decisiontype"][1] == expected[6]
+    assert bsg.court_data["register_explain"][1] == expected[7]
+
+@pytest.mark.parametrize("test_court_data_bsg_fail", test_court_data_bsg_fail)
+def test_bsg_fail(test_court_data_bsg_fail):
+    bsg = parse_ecli.Decision_BSG(test_court_data_bsg_fail)
+    match = re.match(pattern.bsg_compiled, test_court_data_bsg_fail)
+
+    with pytest.raises((KeyError, parse_ecli.InValidAZError)):
+        bsg.parse_ecli(match)
 
 
 
 
 ##########
-# Andere
+# Gerichte der Länder
 ##########
 
 
@@ -283,39 +362,33 @@ def test_laender_fail(test_court_data_laender_fail):
     with pytest.raises((KeyError, parse_ecli.InValidAZError)):
         laender.parse_ecli(match)
 
-##########
-# BVerwG
-##########
 
-test_court_data_bverwg = [
-    ("ECLI:DE:BVERWG:2016:210416U2C4.15.0", ("BVerwG", "21.04.2016", "2 C 4.15", "0", "Revisionen in Verwaltungsstreitverfahren (§§ 49, 132 VwGO)", "2. Senat", "https://www.bverwg.de/de/210416U2C4.15.0")),
-    ("ECLI:DE:BVERWG:2013:291013U1D1.12.0", ("BVerwG", "29.10.2013", "1 D 1.12", "0", "Berufungsverfahren in Disziplinarsachen", "Disziplinarsenat", "https://www.bverwg.de/de/291013U1D1.12.0")),
-    ("ECLI:DE:BVERWG:2020:170320B20F3.18.0", ("BVerwG", "17.03.2020", "20 F 3.18", "0", "Verwaltungsstreitsachen vor dem Fachsenat wegen der verweigerten Vorlage von Urkunden, Akten oder elektronischen Dokumente sowie der verweigerten Erteilung von Auskünften (§ 99 Abs. 2 VwGO)", "Fachsenat nach § 189 VwGO", "https://www.bverwg.de/de/170320B20F3.18.0")),
+##################
+# Filetests
+##################
+def test_read_from_file_raw_stdout(capsys):
+    parse_ecli.read_from_file_mode("tests/input_search.txt", raw=True)
+    sys.stdout.reconfigure(encoding='utf-8')
+    out, err = capsys.readouterr()
+    sys.stdout.write(out)
+    sys.stderr.write(err)
 
-]
+    assert out.startswith("4 g")
+    # Vergleich funktioniert nur zeilenweise, selbst mit Triple """
+    assert "Positionen in Datei: [294, 935, 1144, 1500]" in out
+    assert "ECLI:DE:OLGBB:2020:0213.12U54.19.00;Brandenburgisches Oberlandesgericht;13.02.2020;12 U 54/19;00;Berufungen in Zivilsachen (§ 119 Abs. 1 Nr. 2 GVG, §§ 511 ff ZPO);" in out
+    assert "ECLI:DE:SGBE:2019:1023.S83KA43.19.00;Sozialgericht Berlin;23.10.2019;S 83 KA 43/19;00;Vertrags(zahn)arztrecht;" in out
+    assert "ECLI:DE:OVGNI:2020:0506.13LB190.19.00;Niedersächsisches Oberverwaltungsgericht;06.05.2020;13 LB 190/19;00;Unbekanntes Registerzeichen!;" in out
+    assert "ECLI:DE:BSG:2019:200219BGS1180;BSG;Großer Senat;20.02.2019;GS 1/18;0;Beschluss;Verfahren vor dem Großen Senat;" in out
 
-test_court_data_bverwg_fail = [
-"ECLI:DE:BVERWG:2016:210416U2UU4.15.0", # Ungültiges Registerzeichen BVerfG
-]
+def test_read_from_file_batch(capsys):
+    ecli_liste = parse_ecli.get_input("tests/teststrings.txt", batchmode=True)
+    match_list = parse_ecli.analyse_file_batch(ecli_liste)
+    assert match_list[0].court_data["court"][1] == "BVerfG"
+    assert match_list[3].court_data["date"][1] == "31.05.2016"
+    assert match_list[7].court_data["az"][1] == "I ZR 176/18"
+    assert match_list[10].court_data["az"][1] == "3 Ni 32/17 (EP)"
 
 
-@pytest.mark.parametrize("bverwg_input, expected", test_court_data_bverwg)
-def test_bverwg_parse(bverwg_input, expected):
-    bverwg = parse_ecli.Decision_BVerwG(bverwg_input)
-    match = re.match(pattern.bverwg_compiled, bverwg_input)
-    bverwg.parse_ecli(match)
-    assert bverwg.court_data["court"][1] == expected[0]
-    assert bverwg.court_data["date"][1] == expected[1]
-    assert bverwg.court_data["az"][1] == expected[2]
-    assert bverwg.court_data["collision"][1] == expected[3]
-    assert bverwg.court_data["decision_explain"][1] == expected[4]
-    assert bverwg.court_data["bodytype"][1] == expected[5]
-    assert bverwg.court_data["url"][1] == expected[6]
 
-@pytest.mark.parametrize("test_court_data_bverwg_fail", test_court_data_bverwg_fail)
-def test_bverwg_fail(test_court_data_bverwg_fail):
-    bverwg = parse_ecli.Decision_BVerwG(test_court_data_bverwg_fail)
-    match = re.match(pattern.bverwg_compiled, test_court_data_bverwg_fail)
-
-    with pytest.raises((KeyError, parse_ecli.InValidAZError)):
-        bverwg.parse_ecli(match)
+##################
