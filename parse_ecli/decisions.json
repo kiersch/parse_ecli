@@ -362,7 +362,7 @@
       "AY" : "Asylbewerberleistungsgesetz",
       "BL" : "Blindengeld beziehungsweise Blindenhilfe",
       "KS" : "Künstlersozialversicherung",
-      "ÜG"  : "Rechtsschutz bei überlangen Gerichtsverfahren"
+      "UEG"  : "Rechtsschutz bei überlangen Gerichtsverfahren"
     },
     "bsg_register_explain" :{
       "R" : "Revisionsregister",

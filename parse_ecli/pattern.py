@@ -116,7 +116,7 @@ bsg = r"""
     (?P<type>[UB]) # Urteil/Beschluss
     (?P<azinstance>B)?
     (?P<azbody>[0-9]|1[0-4]|GS)
-    (?P<azreg>[()A-Z]{1,2})?
+    (?P<azreg>[()A-Z]{1,3})?
     (?P<aznumber>\d{1,4}?)
     (?P<azyear>\d{2})
     (?P<azregister>[A-Z]{1,2})?
