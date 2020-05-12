@@ -616,6 +616,7 @@
       "AL" : "Arbeitslosenversicherung und Arbeitsförderung",
       "AS" : "Grundsicherung für Arbeitssuchende",
       "AY" : "Asylbewerberleistungen",
+      "AR" : "Allgemeines Register",
       "BA" : "Anfrageverfahren nach § 7a SGB IV sowie der Betriebsprüfungen nach §§ 28p und 28q SGB IV",
       "BK" : "Kinderzuschlag",
       "BL" : "Blindengeld und Blindenhilfe",
@@ -692,29 +693,36 @@
 
     "verwg_explain" : {
 "A" : "Rechtsmittel gegen Entscheidungen der Verwaltungsgerichte in Hauptverfahren",
+"B" : "Vorläufiger/einstweiliger Rechtsschutz; auch Rechtsmittel gegen Beschlüsse der Verwaltungsgerichte",
+"D" : "Erstinstanzliche Hauptverfahren",
+"E" : "Beschwerden in Prozesskostenhilfesachen; sonstige Beschwerden gegen Beschlüsse",
 "F" : "Anträge außerhalb eines anhängigen Verfahrens",
 "I" : "Anträge außerhalb eines anhängigen Verfahrens",
-"E" : "Beschwerden in Prozesskostenhilfesachen; sonstige Beschwerden gegen Beschlüsse",
-"D" : "Erstinstanzliche Hauptverfahren",
+"O" : "Anträge außerhalb eines anhängigen Verfahrens",
 "K" : "Erstinstanzliche Hauptverfahren",
-"M" : "Vollstreckungsverfahren",
-"NC" : "Vorläufiger Rechtsschutz in Numerus-clausus-Sachen",
 "L" : "Vorläufiger/einstweiliger Rechtsschutz",
-"B" : "Vorläufiger/einstweiliger Rechtsschutz; auch Rechtsmittel gegen Beschlüsse der Verwaltungsgerichte"
+"M" : "Vollstreckungsverfahren",
+"N" : "Vollstreckungsverfahren",
+"NC" : "Vorläufiger Rechtsschutz in Numerus-clausus-Sachen"
 },
 
 "verwg_register_explain" : {
 "A" : "Asylverfahren",
-"PVB" : "Bundespersonalvertretungssache",
-"G" : " Flurbereinigungsverfahren",
 "AK" : "Großtechnisches Bauvorhaben gemäß § 48 VwGO",
+"B" : "Berufsgerichtliche Verfahren",
+"E" : "Klagen auf Entschädigung nach § 173 Satz 2 VwGO in Verbindung mit § 201 GVG",
 "EK" : "Klagen auf Entschädigung nach § 173 Satz 2 VwGO in Verbindung mit § 201 GVG",
-"S" : "Landesberufsgerichtliches Verfahren (Architekten/innen, Stadtplaner/innen)",
-"U" : "Landesberufsgerichtliches Verfahren (beratende Ingenieur/innen)",
-"T" : "Landesberufsgerichtliches Verfahren (Heilberufe)",
-"PVL" : "Landespersonalvertretungssache",
+"G" : " Flurbereinigungsverfahren",
 "GR" : "Güterichterverfahren nach § 173 VwGO in Verbindung mit § 278 Abs. 5 ZPO",
-"NE" : "Normenkontrollverfahren gemäß § 47 VwGO"
+"N" : "Normenkontrollverfahren gemäß § 47 VwGO",
+"NE" : "Normenkontrollverfahren gemäß § 47 VwGO",
+"PV" : "Personalvertretungssache",
+"PVB" : "Bundespersonalvertretungssache",
+"PVL" : "Landespersonalvertretungssache",
+"S" : "Landesberufsgerichtliches Verfahren (Architekten/innen, Stadtplaner/innen)",
+"T" : "Landesberufsgerichtliches Verfahren (Heilberufe) oder Technische Großverfahren",
+"U" : "Landesberufsgerichtliches Verfahren (beratende Ingenieur/innen)",
+"Z" : "Anträge auf Zulassung der Berufung"
 
 },
 "fg_explain" : {

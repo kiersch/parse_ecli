@@ -158,10 +158,10 @@ ordentliche_az = r"""
     (?P<azprefix>[A-Z]{1,4}?)?? # Optional und lazy, tritt daher hinter azreg zurück
     (?P<azbody>\d{1,3})?
     (?P<azreg>[A-Z\.]{1,5})\.?
-    (?P<azbody_sta>\d{1,4}(?=JS))? # Matcht nur, wenn ein JS folgt.
+    (?P<azbody_sta>\d{1,5}(?=JS))? # Matcht nur, wenn ein JS folgt.
     (?P<azreg_sta>JS)?
-    (?P<aznumber>\d{1,4})\.
-    (?P<azyear>\d{2})
+    (?P<aznumber>\d{1,5})\.
+    (?P<azyear>\d{1,2})
     (?P<azsuffix>[A-Z]{1,5})?
 """
 
@@ -194,14 +194,16 @@ verwg = r"""
 """
 
 verwg_az = r"""
-    ^(?P<azprefix>OVG)?
+    (?P<azprefix>OVG)?
     (?P<azbody>\d{1,2})
     (?P<azreg>[ABCDEFIKLMN]{1,3})
     (?P<aznumber>\d{1,4})\.
-    (?P<azyear>\d{2})\.?
-    (?P<azhessen>F|KS|DA|GI|WI)? # Gerichtsbezeichnung, die in Hessen angefügt wird
-    (?P<azregister>A|AK|EK|G|GR|NE|PVB|PVL|S|T|U{,3})?$ # Optionales Register für Verfahrensart
+    (?P<azyear>\d{2})($|\.?
+    (?P<azhessen>F|KS|DA|GI|WI)?\.? # Hessischer Zusatz für das jeweilige Gericht, z.B. KS für Kassel
+    (?P<azregister>A|AK|EK|G|GR|NE|PVB|PVL|S|T|U)? # Registerzusatz z.B. A für Asyl
+    $) # End of String in der zweiten Alternative wichtig, damit "33L2274.14" in "33L2274.14PB" nicht matcht
 """
+
 verwg_az_bayern = r""" # Hier weicht das bayerische Schema vom Rest des Landes ab...
     (?P<azbayern>[ABUNROWM]{1,2}) # Gerichtspräfix
     (?P<azbody>\d{1,2})
