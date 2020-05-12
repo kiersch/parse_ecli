@@ -82,6 +82,7 @@ def search_ecli(ecli_string):
             try:
                 decision = Decision_Other(match.group())
                 decision.parse_ecli(match)
+                decision.position = match.start()
                 decision_list.append(decision)
             except (NoValidECLIError, InValidAZError, InValidCourtError):
                 # Es kann sein, dass ein ECLI gematcht wurde, der aber dennoch ungültig ist (z.B. im Az)
@@ -94,6 +95,7 @@ def search_ecli(ecli_string):
             try:
                 decision = Decision_BGH(match.group())
                 decision.parse_ecli(match)
+                decision.position = match.start()
                 decision_list.append(decision)
             except (NoValidECLIError, InValidAZError, InValidCourtError):
                 pass
@@ -104,6 +106,7 @@ def search_ecli(ecli_string):
             try:
                 decision = Decision_BVerfG(match.group())
                 decision.parse_ecli(match)
+                decision.position = match.start()
                 decision_list.append(decision)
             except (NoValidECLIError, InValidAZError, InValidCourtError):
                 pass
@@ -114,6 +117,7 @@ def search_ecli(ecli_string):
             try:
                 decision = Decision_BVerwG(match.group())
                 decision.parse_ecli(match)
+                decision.position = match.start()
                 decision_list.append(decision)
             except (NoValidECLIError, InValidAZError, InValidCourtError):
                 pass
@@ -124,6 +128,7 @@ def search_ecli(ecli_string):
             try:
                 decision = Decision_BAG(match.group())
                 decision.parse_ecli(match)
+                decision.position = match.start()
                 decision_list.append(decision)
             except (NoValidECLIError, InValidAZError, InValidCourtError):
                 pass
@@ -134,6 +139,7 @@ def search_ecli(ecli_string):
             try:
                 decision = Decision_BSG(match.group())
                 decision.parse_ecli(match)
+                decision.position = match.start()
                 decision_list.append(decision)
             except (NoValidECLIError, InValidAZError, InValidCourtError):
                 pass
@@ -144,6 +150,7 @@ def search_ecli(ecli_string):
             try:
                 decision = Decision_BFH(match.group())
                 decision.parse_ecli(match)
+                decision.position = match.start()
                 decision_list.append(decision)
             except (NoValidECLIError, InValidAZError, InValidCourtError):
                 pass
@@ -154,6 +161,7 @@ def search_ecli(ecli_string):
             try:
                 decision = Decision_BPatG(match.group())
                 decision.parse_ecli(match)
+                decision.position = match.start()
                 decision_list.append(decision)
             except (NoValidECLIError, InValidAZError, InValidCourtError):
                 pass
@@ -367,8 +375,9 @@ class Decision_BVerwG(Decision):
         self.court_data["date"][1] = match.group("date")[0:2] + "." + match.group("date")[2:4] + "." + match.group("year")
         self.court_data["collision"][1] = super().check_collision(match.group("collision"))
         try:
-            self.court_data["az"][1] = (match.group("azbody") + " " + self.loaded_data["bverwg_az"][match.group("azreg")]
+            azstring = (match.group("azbody") + " " + self.loaded_data["bverwg_az"][match.group("azreg")]
                                             + " " + match.group("aznumber").lstrip("0") + "." + match.group("azyear"))
+            self.court_data["az"][1] = ' '.join(azstring.split())
             self.court_data["decision_explain"][1] = self.loaded_data["bverwg_explain"][match.group("azreg")]
         except KeyError as e:
             raise InValidAZError(f"Ungültiges Registerzeichen: {match.group('azreg')}") from e
@@ -393,8 +402,9 @@ class Decision_BFH(Decision):
         self.court_data["collision"][1] = super().check_collision(match.group("collision"))
         azbody = super().check_azpart_empty(match.group("azbody"))
         self.court_data["bodytype"][1] = self.determine_body(azbody, match.group("azreg"))
-        self.court_data["az"][1] = (azbody + " " + match.group("azreg")
+        azstring = (azbody + " " + match.group("azreg")
                                         + " " + match.group("aznumber").lstrip("0") + "/" + match.group("azyear"))
+        self.court_data["az"][1] = ' '.join(azstring.split())
         self.court_data["decision_explain"][1] = self.loaded_data["bfh_explain"][match.group("azreg")]
 
 class Decision_BPatG(Decision):
@@ -408,8 +418,9 @@ class Decision_BPatG(Decision):
         suffix = super().check_azpart_empty(match.group("azsuffix"))
         if suffix != '':
             suffix = " (" + suffix + ")"
-        self.court_data["az"][1] = (match.group("azbody") + " " + self.loaded_data["bpatg_az"][match.group("azreg")]
+        azstring = (match.group("azbody") + " " + self.loaded_data["bpatg_az"][match.group("azreg")]
                                         + " " + match.group("aznumber").lstrip("0") + "/" + match.group("azyear") + suffix)
+        self.court_data["az"][1] = ' '.join(azstring.split())
         self.court_data["decision_explain"][1] = self.loaded_data["bpatg_explain"][match.group("azreg")]
 
 class Decision_BAG(Decision):
@@ -422,11 +433,20 @@ class Decision_BAG(Decision):
         self.court_data["date"][1] = match.group("date")[0:2] + "." + match.group("date")[2:4] + "." + match.group("year")
         self.court_data["collision"][1] = super().check_collision(match.group("collision"))
         azbody = super().check_azpart_empty(match.group("azbody"))
-        self.court_data["az"][1] = (azbody + " " + match.group("azreg")
+        azstring = (azbody + " " + match.group("azreg")
                                         + " " + match.group("aznumber").lstrip("0") + "/" + match.group("azyear"))
+        self.court_data["az"][1] = ' '.join(azstring.split())
         self.court_data["decision_explain"][1] = self.loaded_data["bag_explain"][match.group("azreg")]
 
 class Decision_BSG(Decision):
+    def determine_body(self, azbody, azreg):
+
+        if azbody == "GS":
+            return "Großer Senat"
+        else:
+            return azbody + ". Senat"
+
+
     def parse_ecli(self, match):
 
 
@@ -434,6 +454,7 @@ class Decision_BSG(Decision):
         self.court_data["decisiontype"][1] = self.loaded_data["bpatg_decisiontype"][match.group("type")]
         self.court_data["date"][1] = match.group("date")[0:2] + "." + match.group("date")[2:4] + "." + match.group("year")
         self.court_data["collision"][1] = super().check_collision(match.group("collision"))
+        self.court_data["bodytype"][1] = self.determine_body(match.group("azbody"), match.group("azreg"))
         azinstance = super().check_azpart_empty(match.group("azinstance"))
         if azinstance == '':
             if match.group("azbody") != "GS":
@@ -442,11 +463,13 @@ class Decision_BSG(Decision):
                 raise InValidAZError("Kein führendes B im Aktenzeichen (nur bei GS-Verfahren zulässig!)")
 
         azreg = super().check_azpart_empty(match.group("azreg"))
+        if azreg == "UEG":
+            azreg = "ÜG"
         if azreg == '':
             if match.group("azbody") != "GS":
                 raise InValidAZError("Kein Sachgebiet im Aktenzeichen (nur bei GS-Verfahren zulässig!)")
             else:
-                self.court_data["decision_explain"][1] = "Großer Senat"
+                self.court_data["decision_explain"][1] = "Verfahren vor dem Großen Senat"
         else:
             self.court_data["decision_explain"][1] = self.loaded_data["bsg_explain"][match.group("azreg")]
 
@@ -458,9 +481,11 @@ class Decision_BSG(Decision):
         else:
             self.court_data["register_explain"][1] = self.loaded_data["bsg_register_explain"][match.group("azregister")]
 
-        self.court_data["az"][1] = (azinstance + " " + match.group("azbody") + " " + azreg + " "
-                                        + match.group("aznumber").lstrip("0") + "/" + match.group("azyear") + " " + azregister).strip()
+        azstring = (azinstance + " " + match.group("azbody") + " " + azreg + " "
+                                        + match.group("aznumber").lstrip("0") + "/" + match.group("azyear") + " " + azregister)
 
+        # Entfernt doppelte Leerzeichen und leading/trailing
+        self.court_data["az"][1] = ' '.join(azstring.split())
 
 
 class Decision_Other(Decision):
@@ -494,6 +519,8 @@ class Decision_Other(Decision):
                 return "v"
         elif match.group("court").startswith("FG"):
             return "f"
+        else:
+            return "unknown"
 
     def parse_ecli_az_sozg(self, match):
         if az_match := re.match(pattern.sozg_az, match.group("az"), flags=re.VERBOSE):
@@ -525,18 +552,30 @@ class Decision_Other(Decision):
                 azreg_sta = self.loaded_data["ordentliche_az"][azreg_sta]
             azsuffix = super().check_azpart_empty(az_match.group("azsuffix"))
             azreg = az_match.group("azreg")
-            if az_match.group("azreg") in self.loaded_data["ordentliche_az"]:
-                azreg = self.loaded_data["ordentliche_az"][az_match.group("azreg").replace(".","")]
+
+            if azreg.replace(".","") in self.loaded_data["ordentliche_az"]:
+                if az_match.group("azreg").replace(".","") in self.loaded_data["ordentliche_explain"]:
+                    decision_explain = self.loaded_data["ordentliche_explain"][az_match.group("azreg").replace(".","")]
+                else:
+                    # Dies bedeutet im Zweifel keinen ungültigen ECLI, deshalb keine Exception, sondern nur
+                    # Information
+                    decision_explain = "Unbekanntes Registerzeichen!"
+                azreg = self.loaded_data["ordentliche_az"][azreg.replace(".","")]
+            elif azreg.startswith(("A", "B", "C", "D")) and azreg.replace(".","")[1:] in self.loaded_data["ordentliche_az"]:
+                # Wenn dies zutrifft, haben wir es höchstwahrscheinlich mit einer Abteilung/Kammer mit alphanumerischer
+                # Bezeichnung zu tun wie ECLI:DE:AGHHAL:2019:0816.327CCS76.18.0A (Abteilung 327c) oder ECLI:DE:LGD:2019:0808.4CO88.17.0A
+                # (4c Zivilkammer)
+                if az_match.group("azreg").replace(".","")[1:] in self.loaded_data["ordentliche_explain"]:
+                    decision_explain = self.loaded_data["ordentliche_explain"][az_match.group("azreg").replace(".","")[1:]]
+                else:
+                    decision_explain = "Unbekanntes Registerzeichen!"
+                azbody = azbody + azreg[0].lower()
+                azreg = self.loaded_data["ordentliche_az"][azreg.replace(".","")[1:]]
             az = (azprefix + " " + azbody + " " + azreg
                     + " " + azbody_sta + " " + azreg_sta + " "  + az_match.group("aznumber").lstrip("0") + "/" + az_match.group("azyear")
                     + " " + azsuffix).strip() # Strip bezieht sich auf den gesamten String, der az zugewiesen wird!
             az = re.sub(r"\s\s+" , " ", az)
-            if az_match.group("azreg") in self.loaded_data["ordentliche_explain"]:
-                decision_explain = self.loaded_data["ordentliche_explain"][az_match.group("azreg").replace(".","")]
-            else:
-                # Dies bedeutet im Zweifel keinen ungültigen ECLI, deshalb keine Exception, sondern nur
-                # Information
-                decision_explain = "Unbekanntes Registerzeichen!"
+
 
             return az, decision_explain
         else:
@@ -600,7 +639,7 @@ class Decision_Other(Decision):
                 decisiontype = "Unbekanntes Registerzeichen!"
             return az, decision_explain, decisiontype
         else:
-            raise InValidAZError(f"Ungültiges Aktenzeichen!: {match.group('az')}")
+            raise InValidAZError(f"Ungültiges oder unbekanntes Aktenzeichen!: {match.group('az')}")
 
     def parse_ecli(self, match):
         self.valid_court(match)
@@ -613,23 +652,30 @@ class Decision_Other(Decision):
         # erfasst zu werden.
         jurisdiction = self.determine_jurisdiction(match)
         # Das Aktenzeichen wird für jede Gerichtsbarkeit anders gebildet, also zunächst bestimmen, welche hier vorliegt.
-        if jurisdiction == "o":
-            self.court_data["az"][1], self.court_data["decision_explain"][1] = self.parse_ecli_az_ordentliche(match)
-        elif jurisdiction == "s":
-            self.court_data["az"][1], self.court_data["decision_explain"][1] = self.parse_ecli_az_sozg(match)
-        elif jurisdiction == "a":
-            self.court_data["az"][1], self.court_data["decision_explain"][1] = self.parse_ecli_az_arbg(match)
-        elif jurisdiction == "v":
-            self.court_data["az"][1], self.court_data["decision_explain"][1], self.court_data["decisiontype"][1]\
-             = self.parse_ecli_az_verwg(match)
-        elif jurisdiction == "vbay":
-            self.court_data["az"][1], self.court_data["decision_explain"][1], self.court_data["decisiontype"][1]\
-             = self.parse_ecli_az_verwg_bayern(match)
-        elif jurisdiction == "f":
-            self.court_data["az"][1], self.court_data["decision_explain"][1], self.court_data["decisiontype"][1]\
-             = self.parse_ecli_az_fg(match)
-        else:
-            self.court_data["az"][1] = match.group("az")
+        try:
+            if jurisdiction == "o":
+                self.court_data["az"][1], self.court_data["decision_explain"][1] = self.parse_ecli_az_ordentliche(match)
+            elif jurisdiction == "s":
+                self.court_data["az"][1], self.court_data["decision_explain"][1] = self.parse_ecli_az_sozg(match)
+            elif jurisdiction == "a":
+                self.court_data["az"][1], self.court_data["decision_explain"][1] = self.parse_ecli_az_arbg(match)
+            elif jurisdiction == "v":
+                self.court_data["az"][1], self.court_data["decision_explain"][1], self.court_data["decisiontype"][1]\
+                 = self.parse_ecli_az_verwg(match)
+            elif jurisdiction == "vbay":
+                self.court_data["az"][1], self.court_data["decision_explain"][1], self.court_data["decisiontype"][1]\
+                 = self.parse_ecli_az_verwg_bayern(match)
+            elif jurisdiction == "f":
+                self.court_data["az"][1], self.court_data["decision_explain"][1], self.court_data["decisiontype"][1]\
+                 = self.parse_ecli_az_fg(match)
+            else:
+                self.court_data["az"][1] = match.group("az")
+        except (NoValidECLIError, InValidAZError, InValidCourtError) as e:
+            if jurisdiction == "o":
+                self.court_data["az"][1], self.court_data["decision_explain"][1] = match.group("az"), ""
+                raise UnknownAZError("Aktenzeichen konnte nicht analysiert werden und wird unverändert aus ECLI übernommen")
+            else:
+                raise e
 
 
 class NoECLIError(Exception):
@@ -642,6 +688,9 @@ class InValidCourtError(Exception):
     pass
 
 class InValidAZError(Exception):
+    pass
+
+class UnknownAZError(Exception):
     pass
 
 
@@ -664,11 +713,10 @@ def get_input(input_file_string, batchmode=False):
     try:
         with open(input_file_string, encoding="utf8") as input_file:
             if batchmode:
-                lines = input_file.readlines()
-                for index, line in enumerate(lines):
+                for index, line in enumerate(input_file):
                     # Alle Zeilen, die nicht mit ECLI:DE: beginnen, werden ignoriert.
                     if line.upper().startswith("ECLI:DE:"):
-                        ecli_list.append([line, index])
+                        ecli_list.append([line, index+1])
                 return ecli_list
             else:
                 input_file_content = input_file.read()
@@ -698,26 +746,64 @@ def write_to_file(match_list, output_file_arg, rawmode=False):
         except FileNotFoundError as e:
             print(f"Dateiname/-pfad ungültig: {e}")
 
-def read_from_file_mode(input_file_string, output_file_string=None, raw=False, batch=False):
+def analyse_file_batch(ecli_list, silent=False):
+    if silent:
+        pass
+    else:
+        print(f"{len(ecli_list)} Zeilen gefunden, die mit ECLI:DE: beginnen.")
+    match_list = []
+    for ecli_list_entry in ecli_list:
+        try:
+            index = ecli_list_entry[1]
+            # index muss vor my_decision zugewiesen werden, sonst werden bei exception
+            # falsche Zeilen ausgegeben!
+            my_decision = match_ecli(ecli_list_entry[0])
+            match_list.append(my_decision)
+        except (NoValidECLIError, InValidAZError, InValidCourtError) as e:
+            if silent:
+                pass
+            else:
+                print(f"Ignoriere ungültigen ECLI in Zeile {index}: {e}.")
+        except (UnknownAZError) as e:
+            if silent:
+                pass
+            else:
+                print(f"Warnung: ECLI in Zeile {index}: {e}.")
+    if silent:
+        pass
+    else:
+        print(f"Insgesamt waren {len(match_list)} von {len(ecli_list)} erkannten ECLI gültig.")
+    return match_list
+
+def analyse_file_search(ecli_list, silent=False):
+    match_list = search_ecli(ecli_list[0][0])
+    if silent:
+        pass
+    else:
+        print(f"{len(match_list)} gültige ECLI gefunden.")
+        print("Positionen in Datei:",end=" ")
+        position_list = []
+        for decision in match_list:
+            position_list.append(decision.position)
+            position_list.sort()
+        print(position_list)
+    return match_list
+
+
+def read_from_file_mode(input_file_string, output_file_string=None, raw=False, batch=False, silent=False):
     ecli_list = []
     match_list = []
     ecli_list = get_input(input_file_string, batch)
     if len(ecli_list) == 0:
-        print("Keine ECLI gefunden!")
+        if silent:
+            pass
+        else:
+            print("Keine ECLI gefunden!")
     else:
         if batch:
-            print(f"{len(ecli_list)} Zeilen gefunden, die mit ECLI:DE: beginnen.")
-            for ecli_list_entry in ecli_list:
-                try:
-                    my_decision = match_ecli(ecli_list_entry[0])
-                    index = ecli_list_entry[1]
-                    match_list.append(my_decision)
-                except (NoValidECLIError, InValidAZError, InValidCourtError) as e:
-                    print(f"Ignoriere ungültigen ECLI in Zeile {index}: {e}.")
-            print(f"Insgesamt waren {len(match_list)} von {len(ecli_list)} erkannten ECLI gültig.")
+            match_list = analyse_file_batch(ecli_list, silent)
         else:
-            match_list = search_ecli(ecli_list[0][0])
-            print(f"{len(match_list)} gültige ECLI gefunden.")
+            match_list = analyse_file_search(ecli_list, silent)
 
         if output_file_string is not None:
             write_to_file(match_list, output_file_string, raw)
@@ -731,6 +817,7 @@ def commandline_mode(ecli_string, output_file, raw=False):
     try:
         my_decision = match_ecli(ecli_string)
         if output_file is not None:
+            match_list = [my_decision]
             write_to_file(match_list, output_file, raw)
         else:
             my_decision.output_decision(raw)
@@ -753,18 +840,21 @@ def main_func():
                         help='Ausgabe der analysierten Bestandteile ohne weitere Beschriftung, durch Semikolon getrennt'))
     (parser.add_argument('-b', '--batch', action='store_true',
                         help='Bei Angabe einer Input-Datei wird nicht nach ECLI gesucht, sondern jede Zeile als ECLI behandelt'))
+    (parser.add_argument('-s', '--silent', action='store_true',
+                        help='Unterdrückt Warnungen, wenn eine Datei zum Einlesen angegeben wurde'))
     (parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.9.4'))
     args, args2 = parser.parse_known_args()
 
 
     if args.input_file is not None:
         # Falls mit -i eine Datei angegeben wurde:
-        read_from_file_mode(args.input_file, args.output_file, args.raw, args.batch)
+        read_from_file_mode(args.input_file, args.output_file, args.raw, args.batch, args.silent)
     else:
         # Falls direkt von der Kommandozeile gelesen wird.
         parser2 = argparse.ArgumentParser()
         parser2.add_argument('ecli', metavar='ECLI', help='Der zu überprüfende ECLI')
         # Ansonsten einzelnen ECLI direkt von der Kommandozeile
         args2 = parser2.parse_args(args2)
-        ecli_string = args2.ecli.upper().strip(' .:/()')
+        ecli_string = args2.ecli.upper()
+        ecli_string = ecli_string.strip()
         commandline_mode(ecli_string, args.output_file, args.raw)
