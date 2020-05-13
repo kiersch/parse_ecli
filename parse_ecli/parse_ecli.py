@@ -273,7 +273,7 @@ class Decision_BVerwG(Decision):
         self.court_data["collision"][1] = super().check_collision(match.group("collision"))
         try:
             self.court_data["az"][1] = (match.group("azbody") + " " + self.loaded_data["bverwg_az"][match.group("azreg")]
-                                            + " " + match.group("aznumber").lstrip("0") + "." + match.group("azyear"))
+                                            + " " + match.group("aznumber").lstrip("0") + "/" + match.group("azyear"))
             self.court_data["decision_explain"][1] = self.loaded_data["bverwg_explain"][match.group("azreg")]
         except KeyError as e:
             raise InValidAZError(f"Ungültiges Registerzeichen: {match.group('azreg')}") from e
