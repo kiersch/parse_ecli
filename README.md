@@ -1,5 +1,5 @@
 # parse_ecli
-![Version 0.9.3](https://img.shields.io/badge/version-0.9.3-green)
+![Version 0.9.4](https://img.shields.io/badge/version-0.9.4-green)
 [![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/)
 ![MIT License](https://img.shields.io/badge/license-MIT-lightgrey)
 
@@ -32,26 +32,45 @@ parse-ecli <ECLI>
 ```
 Der ECLI muss vollständig eingegeben werden. Führende Leerzeichen und Sonderzeichen werden entfernt.
 
-Optional:
+### Optional:
 
+#### raw-mode
 ```
 parse-ecli -r <ECLI>
 ```
 für rawmode, d.h. die Daten werden ohne Beschriftung nur durch Semikolon getrennt ausgegeben.
 
+#### Datei-Eingabe
 ```
 parse-ecli -i input_file
 ```
-ECLI können auch aus einer Textdatei eingelesen werden, die mit `-i` angegeben wird. Dabei wird zeilenweise ein ECLI pro Zeile erfasst, die Zeilen dürfen keine anderen Daten enthalten. Zeilen, die nicht mit `ECLI:DE:` beginnen, werden ignoriert. Bei Nutzung der Option `-i` wird ein zusätzlich über die Kommandozeile eingegebener ECLI ignoriert.
+ECLI können auch aus einer Textdatei eingelesen werden, die mit `-i` angegeben wird. Standardmäßig wird die Datei nach ECLI an beliebigen Stellen durchsucht. 
+Bei Nutzung der Option `-i` wird ein zusätzlich über die Kommandozeile eingegebener ECLI ignoriert.
 
+#### Batch-Verarbeitung
+```
+parse-ecli -i input_file -b
+```
+Im Batch-Modus, der mit `-b` aktiviert wird, können schnell beliebig viele ECLI validiert werden. Hier wird aus einer mit `-i` angegebenen Datei ein ECLI pro Zeile erfasst. Die Zeilen dürfen keine anderen Daten enthalten. Zeilen, die nicht mit `ECLI:DE:` beginnen, werden ignoriert. Für ungültige Zeilen wird eine Fehlermeldung ausgegeben. Auch wird gewarnt, falls der ECLI in einer Zeile zwar einem generellen ECLI-Schema entspricht, aber das Aktenzeichen nicht aufgelöst werden konnte. 
+
+#### Silent
+```
+parse-ecli -i input_file -b -s
+```
+Der Schalter `s` unterdrückt die Warnungen für ungültige ECLI im Batch-Modus.
+
+
+#### Datei-Ausgabe
 ```
 parse-ecli -o output_file <ECLI>
 ```
 Die Ausgabe kann auch in eine Datei umgeleitet werden, die mit `-o` angegeben wird.
 
+Warnungen werden nicht in die Datei geleitet.
+
 Durch Kombination der Optionen kann etwa eine Datei `input.txt` mit 100 ECLI maschinenlesbar in der Datei `output.txt` aufbereitet werden:
 ```
-parse-ecli -r -i input.txt -o output.txt
+parse-ecli -r -b -i input.txt -o output.txt
 ```
 
 ## Nutzung als Modul
@@ -153,7 +172,9 @@ Stellt die Hauptfunktionalität des Programms zur Verfügung und kann in andere 
 
 Die Funktion `main_func` wird nur ausgeführt, wenn das Programm mit `parse-ecli` über die Kommandozeile aufgerufen wird. Hier ist die Ein-/Ausgabefunktionalität enthalten.
 
-Die Funktion `match_ecli(ecli_string)` gibt ein Entscheidungs-Objekt zurück, das ein dict namens `court_data` enthält. Dieses enthält die Daten, die aus dem ECLI extrahiert werden konnten. Jedem key ist eine Liste zugeordnet, deren erstes Feld eine Datenbeschreibung ist. Die eigentlichen Daten liegen im zweiten Feld, das leer vorinitialisiert ist.
+Die Funktion `match_ecli(ecli_string)` gibt ein Entscheidungs-Objekt zurück für einen übergebenen String zurück. Erwartet wird hier ein einzelner gültiger ECLI. Die Funktion `search_ecli(ecli_string):` durchsucht einen beliebigen String nach ECLI und gibt eine Liste mit allen Entscheidungs-Objekten zurück.
+
+ Die Entscheidungsobjekte enthalten ein dict namens `court_data`. Dieses enthält die Daten, die aus dem ECLI extrahiert werden konnten. Jedem key ist eine Liste zugeordnet, deren erstes Feld eine Datenbeschreibung ist. Die eigentlichen Daten liegen im zweiten Feld, das leer vorinitialisiert ist.
 
 key|values|Erklärung
 ---|---|---
@@ -173,6 +194,7 @@ Die Entscheidungsklassen verfügen über eine Methode namens `output_decision`, 
 output_decision(rawmode=False, output_file=None):
 ```
 Wird `rawmode` als `true` übergeben, so wird die entsprechende Ausgabe veranlasst (vgl. oben). Als `output_file` kann ein Dateiobjekt angegeben werden, sodass die Ausgabe dorthin erfolgt.
+
 
 
 ## Ziele
