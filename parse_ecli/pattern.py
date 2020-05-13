@@ -66,7 +66,7 @@ bpatg = r"""
 """
 
 bverwg = r"""
-    (?P<ecli>ECLI):
+     (?P<ecli>ECLI):
     (?P<country>DE):
     (?P<court>BVERWG):
     (?P<year>(?:19|20)[0-9]{2}):
@@ -75,7 +75,8 @@ bverwg = r"""
     (?P<azbody>\d{,2})
     (?P<azreg>[()A-Z]{1,11})
     (?P<aznumber>\d{1,4})\.
-    (?P<azyear>\d{2})\.
+    (?P<azyear>\d{2})
+    (?P<azsuffix>D)?\.
     (?P<collision>\d)\b
 """
 
@@ -196,7 +197,7 @@ verwg = r"""
 verwg_az = r"""
     (?P<azprefix>OVG)?
     (?P<azbody>\d{1,2})
-    (?P<azreg>[ABCDEFIKLMN]{1,3})
+    (?P<azreg>[A-Z]{1,3})
     (?P<aznumber>\d{1,4})\.
     (?P<azyear>\d{2})($|\.?
     (?P<azhessen>F|KS|DA|GI|WI)?\.? # Hessischer Zusatz für das jeweilige Gericht, z.B. KS für Kassel
