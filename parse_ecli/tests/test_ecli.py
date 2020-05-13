@@ -318,22 +318,25 @@ def test_bsg_fail(test_court_data_bsg_fail):
 
 
 test_court_data_laender = [
-    ("ECLI:DE:VGK:2015:0211.33L2274.14PVB.00", ("Verwaltungsgericht Köln", "11.02.2015", "33 L 2274/14.PVB", "00", "Bundespersonalvertretungssache", "Vorläufiger/einstweiliger Rechtsschutz")),
-    ("ECLI:DE:VGFFM:2020:0402.11K2893.19.F.00",("Verwaltungsgericht Frankfurt am Main", "02.04.2020", "11 K 2893/19.F", "00", "", "Erstinstanzliche Hauptverfahren")),
-    ("ECLI:DE:VGSTUTT:2001:0517.5K1912.01.0A",("Verwaltungsgericht Stuttgart", "17.05.2001", "5 K 1912/01", "0A", "", "Erstinstanzliche Hauptverfahren")),
-    ("ECLI:DE:OVGSL:2017:0220.2A34.16.0A", ("Oberverwaltungsgericht des Saarlandes", "20.02.2017", "2 A 34/16", "0A", "", "Rechtsmittel gegen Entscheidungen der Verwaltungsgerichte in Hauptverfahren")),
-    ("ECLI:DE:VGHANNO:2019:0312.7B850.19.00", ("Verwaltungsgericht Hannover", "12.03.2019", "7 B 850/19", "00", "", "Vorläufiger/einstweiliger Rechtsschutz; auch Rechtsmittel gegen Beschlüsse der Verwaltungsgerichte")),
-    ("ECLI:DE:OVGBEBB:2017:0406.OVG12B7.16.0A", ("Oberverwaltungsgericht Berlin-Brandenburg", "06.04.2017", "OVG 12 B 7/16", "0A", "", "Vorläufiger/einstweiliger Rechtsschutz; auch Rechtsmittel gegen Beschlüsse der Verwaltungsgerichte")), #Hier eigentlich . statt / im Az.
+    ("ECLI:DE:AGBAYRE:2016:0622.105C1568.15WEG.0A", ("Amtsgericht Bayreuth", "22.06.2016", "105 C 1568/15 WEG", "0A", "Erstinstanzliche Zivilprozesse", "")),
+    ("ECLI:DE:AGBAYRE:2016:1109.2M2168.16.0A", ("Amtsgericht Bayreuth", "09.11.2016", "2 M 2168/16", "0A", "Zwangsvollstreckungssachen", "")),
+    ("ECLI:DE:AGBEWE:2020:0108.22CC233.19.0A", ("Amtsgericht Wedding", "08.01.2020", "22c C 233/19", "0A", "Erstinstanzliche Zivilprozesse", "")),
+    ("ECLI:DE:AGRE1:2020:0225.60XIV.L28.20U.00", ("Amtsgericht Recklinghausen", "25.02.2020", "60 XIV(L) 28/20 U", "00", "Unterbringungs- (§ 312 FamFG) und Freiheitsentziehungssachen (§ 415 FamFG)", "")),
+    ("ECLI:DE:FGHH:2020:0220.2K293.15.00", ("Finanzgericht Hamburg", "20.02.2020", "2 K 293/15", "00", "", "Klagen")),
+    ("ECLI:DE:KG:2020:0218.3WS.B11.20.00", ("Kammergericht", "18.02.2020", "3 Ws (B) 11/20", "00", "Beschwerden in Strafsachen und Bußgeldsachen", "")), # In Beck mit falschem Az (11/19) hinterlegt, juris korrekt
+    ("ECLI:DE:LGAC:2019:1011.60KLS806JS589.16.00", ("Landgericht Aachen", "11.10.2019", "60 KLs 806 Js 589/16", "00", "Erstinstanzliche Sachen der großen Strafkammer/Jugendkammer (§ 74 Abs. 1 GVG, § 41 JGG)", "")),
+    ("ECLI:DE:LGD:2019:0808.4CO88.17.0A", ("Landgericht Düsseldorf", "08.08.2019", "4c O 88/17", "0A", "Erstinstanzliche Zivilprozesse (gewöhnliche Prozesse, Arreste und einstweilige Verfügungen; § 71 GVG)", "")),
+    ("ECLI:DE:LSGNRW:2019:1216.L8BA4.18B.ER.00", ("Landessozialgericht Nordrhein-Westfalen", "16.12.2019", "L 8 BA 4/18 B ER", "00", "Anfrageverfahren nach § 7a SGB IV sowie der Betriebsprüfungen nach §§ 28p und 28q SGB IV", "")),
+    ("ECLI:DE:OLGKOBL:2017:0706.9UF108.17.00", ("Oberlandesgericht Koblenz", "06.07.2017", "9 UF 108/17", "00", "Beschwerden in Familiensachen des Rechtspflegers (§ 3 RpflG) sowie gegen andere als Endentscheidungen (§ 39a AktO)", "")),
+    ("ECLI:DE:OVGBEBB:2017:0406.OVG12B7.16.0A", ("Oberverwaltungsgericht Berlin-Brandenburg", "06.04.2017", "OVG 12 B 7/16", "0A", "Vorläufiger/einstweiliger Rechtsschutz; auch Rechtsmittel gegen Beschlüsse der Verwaltungsgerichte", "")), #Hier eigentlich . statt / im Az.
+    ("ECLI:DE:OVGSL:2017:0220.2A34.16.0A", ("Oberverwaltungsgericht des Saarlandes", "20.02.2017", "2 A 34/16", "0A", "Rechtsmittel gegen Entscheidungen der Verwaltungsgerichte in Hauptverfahren", "")),
     ("ECLI:DE:SGDT:2019:1205.S11SO255.18.00", ("Sozialgericht Detmold", "05.12.2019", "S 11 SO 255/18", "00", "Sozialhilfe nach dem SGB XII", "")),
     ("ECLI:DE:SGGIESS:2019:0201.S1U61.15.00", ("Sozialgericht Gießen", "01.02.2019", "S 1 U 61/15", "00", "Gesetzliche Unfallversicherung", "")),
-    ("ECLI:DE:LSGNRW:2019:1216.L8BA4.18B.ER.00", ("Landessozialgericht Nordrhein-Westfalen", "16.12.2019", "L 8 BA 4/18 B ER", "00", "Anfrageverfahren nach § 7a SGB IV sowie der Betriebsprüfungen nach §§ 28p und 28q SGB IV", "")),
-    ("ECLI:DE:AGRE1:2020:0225.60XIV.L28.20U.00", ("Amtsgericht Recklinghausen", "25.02.2020", "60 XIV(L) 28/20 U", "00", "Unterbringungs- (§ 312 FamFG) und Freiheitsentziehungssachen (§ 415 FamFG)", "")),
-    ("ECLI:DE:LGAC:2019:1011.60KLS806JS589.16.00", ("Landgericht Aachen", "11.10.2019", "60 KLs 806 Js 589/16", "00", "Erstinstanzliche Sachen der großen Strafkammer/Jugendkammer (§ 74 Abs. 1 GVG, § 41 JGG)", "")),
-    ("ECLI:DE:AGBAYRE:2016:1109.2M2168.16.0A", ("Amtsgericht Bayreuth", "09.11.2016", "2 M 2168/16", "0A", "Zwangsvollstreckungssachen", "")),
-    ("ECLI:DE:AGBAYRE:2016:0622.105C1568.15WEG.0A", ("Amtsgericht Bayreuth", "22.06.2016", "105 C 1568/15 WEG", "0A", "Erstinstanzliche Zivilprozesse", "")),
-    ("ECLI:DE:FGHH:2020:0220.2K293.15.00", ("Finanzgericht Hamburg", "20.02.2020", "2 K 293/15", "00", "", "Klagen")),
-    ("ECLI:DE:OLGKOBL:2017:0706.9UF108.17.00", ("Oberlandesgericht Koblenz", "06.07.2017", "9 UF 108/17", "00", "Beschwerden in Familiensachen des Rechtspflegers (§ 3 RpflG) sowie gegen andere als Endentscheidungen (§ 39a AktO)", "")),
-
+    ("ECLI:DE:VGFFM:2020:0402.11K2893.19.F.00",("Verwaltungsgericht Frankfurt am Main", "02.04.2020", "11 K 2893/19.F", "00", "Erstinstanzliche Hauptverfahren", "")),
+    ("ECLI:DE:VGHANNO:2019:0312.7B850.19.00", ("Verwaltungsgericht Hannover", "12.03.2019", "7 B 850/19", "00", "Vorläufiger/einstweiliger Rechtsschutz; auch Rechtsmittel gegen Beschlüsse der Verwaltungsgerichte", "")),
+    ("ECLI:DE:VGHH:2019:0215.9K1669.18.00", ("Verwaltungsgericht Hamburg", "15.02.2019", "9 K 1669/18", "00", "Erstinstanzliche Hauptverfahren", "")),
+    ("ECLI:DE:VGK:2015:0211.33L2274.14PVB.00", ("Verwaltungsgericht Köln", "11.02.2015", "33 L 2274/14.PVB", "00", "Vorläufiger/einstweiliger Rechtsschutz", "Bundespersonalvertretungssache")),
+    ("ECLI:DE:VGSTUTT:2001:0517.5K1912.01.0A",("Verwaltungsgericht Stuttgart", "17.05.2001", "5 K 1912/01", "0A", "Erstinstanzliche Hauptverfahren", "")),
     #("ECLI:DE:LGMAGDE:2019:0312.28QS39.19.00", ("Landgericht Magdeburg", "13.12.2019", "28 Qs 39/19", "00", "Beschwerden in Strafsachen und Bußgeldsachen (§ 73 GVG)", "")),
 ]
 
@@ -351,7 +354,7 @@ def test_laender_parse_1(input, expected):
     assert laender.court_data["az"][1] == expected[2]
     assert laender.court_data["collision"][1] == expected[3]
     assert laender.court_data["decision_explain"][1] == expected[4]
-    assert laender.court_data["decisiontype"][1] == expected[5]
+    assert laender.court_data["register_explain"][1] == expected[5]
 #
 
 @pytest.mark.parametrize("test_court_data_laender_fail", test_court_data_laender_fail)

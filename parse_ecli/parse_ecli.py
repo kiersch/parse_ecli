@@ -8,7 +8,7 @@ from pathlib import Path
 from parse_ecli import pattern
 
 
-def match_ecli(ecli_string: string) -> Type[Decision]:
+def match_ecli(ecli_string):
     """Bestimmt, welche Klasse (=Gericht) auf den ECLI passt."""
 # Reihenfolge der Überprüfung nach geschätzter Häufgikeit der Entscheidungen.
 # Nutzt die in PEP572 eingeführten Assignment Expression, da für die Behandlung von REGEX
@@ -84,7 +84,7 @@ def search_ecli(ecli_string):
                 decision.parse_ecli(match)
                 decision.position = match.start()
                 decision_list.append(decision)
-            except (NoValidECLIError, InValidAZError, InValidCourtError):
+            except (NoValidECLIError, InValidAZError, InValidCourtError, UnknownAZError):
                 # Es kann sein, dass ein ECLI gematcht wurde, der aber dennoch ungültig ist (z.B. im Az)
                 # dies wird im searchmode jedoch ignoriert
                 pass
@@ -97,7 +97,7 @@ def search_ecli(ecli_string):
                 decision.parse_ecli(match)
                 decision.position = match.start()
                 decision_list.append(decision)
-            except (NoValidECLIError, InValidAZError, InValidCourtError):
+            except (NoValidECLIError, InValidAZError, InValidCourtError, UnknownAZError):
                 pass
 
     if re.search(pattern.bverfg_compiled, ecli_string) is not None:
@@ -108,7 +108,7 @@ def search_ecli(ecli_string):
                 decision.parse_ecli(match)
                 decision.position = match.start()
                 decision_list.append(decision)
-            except (NoValidECLIError, InValidAZError, InValidCourtError):
+            except (NoValidECLIError, InValidAZError, InValidCourtError, UnknownAZError):
                 pass
 
     if re.search(pattern.bverwg_compiled, ecli_string) is not None:
@@ -119,7 +119,7 @@ def search_ecli(ecli_string):
                 decision.parse_ecli(match)
                 decision.position = match.start()
                 decision_list.append(decision)
-            except (NoValidECLIError, InValidAZError, InValidCourtError):
+            except (NoValidECLIError, InValidAZError, InValidCourtError, UnknownAZError):
                 pass
 
     if re.search(pattern.bag_compiled, ecli_string) is not None:
@@ -130,7 +130,7 @@ def search_ecli(ecli_string):
                 decision.parse_ecli(match)
                 decision.position = match.start()
                 decision_list.append(decision)
-            except (NoValidECLIError, InValidAZError, InValidCourtError):
+            except (NoValidECLIError, InValidAZError, InValidCourtError, UnknownAZError):
                 pass
 
     if re.search(pattern.bsg_compiled, ecli_string) is not None:
@@ -141,7 +141,7 @@ def search_ecli(ecli_string):
                 decision.parse_ecli(match)
                 decision.position = match.start()
                 decision_list.append(decision)
-            except (NoValidECLIError, InValidAZError, InValidCourtError):
+            except (NoValidECLIError, InValidAZError, InValidCourtError, UnknownAZError):
                 pass
 
     if re.search(pattern.bfh_compiled, ecli_string) is not None:
@@ -152,7 +152,7 @@ def search_ecli(ecli_string):
                 decision.parse_ecli(match)
                 decision.position = match.start()
                 decision_list.append(decision)
-            except (NoValidECLIError, InValidAZError, InValidCourtError):
+            except (NoValidECLIError, InValidAZError, InValidCourtError, UnknownAZError):
                 pass
 
     if re.search(pattern.bpatg_compiled, ecli_string) is not None:
@@ -163,7 +163,7 @@ def search_ecli(ecli_string):
                 decision.parse_ecli(match)
                 decision.position = match.start()
                 decision_list.append(decision)
-            except (NoValidECLIError, InValidAZError, InValidCourtError):
+            except (NoValidECLIError, InValidAZError, InValidCourtError, UnknownAZError):
                 pass
 
     return decision_list
@@ -571,6 +571,8 @@ class Decision_Other(Decision):
                     decision_explain = "Unbekanntes Registerzeichen!"
                 azbody = azbody + azreg[0].lower()
                 azreg = self.loaded_data["ordentliche_az"][azreg.replace(".","")[1:]]
+            else:
+                decision_explain = "Unbekanntes Registerzeichen!"
             az = (azprefix + " " + azbody + " " + azreg
                     + " " + azbody_sta + " " + azreg_sta + " "  + az_match.group("aznumber").lstrip("0") + "/" + az_match.group("azyear")
                     + " " + azsuffix).strip() # Strip bezieht sich auf den gesamten String, der az zugewiesen wird!
@@ -584,46 +586,58 @@ class Decision_Other(Decision):
 
     def parse_ecli_az_verwg(self, match):
         decision_explain = ''
+        register_explain = ''
         if az_match := re.match(pattern.verwg_az, match.group("az"), flags=re.VERBOSE):
             azregister = super().check_azpart_empty(az_match.group("azregister"))
             if azregister != '':
                 azregister = "." + azregister
-                decision_explain = self.loaded_data["verwg_register_explain"][az_match.group("azregister")]
+                if "VGHH" in match.group("court"):
+                    register_explain = self.loaded_data["verwg_register_explain_hamburg"][az_match.group("azregister")]
+                else:
+                    register_explain = self.loaded_data["verwg_register_explain"][az_match.group("azregister")]
             azhessen = super().check_azpart_empty(az_match.group("azhessen"))
             # In Hessen steht wird den Az. eine Kurzbezeichnung des Gericht angefügt,
             # z.B. KS für VG Kassel: ECLI:DE:VGKASSE:2020:0406.3L348.20.KS.00
             if azhessen != '':
                 azhessen = "." + azhessen
-            azprefix =super().check_azpart_empty(az_match.group("azprefix"))
+
+            azprefix = super().check_azpart_empty(az_match.group("azprefix"))
             if azprefix != '':
                 azprefix = azprefix + " "
+
             az = (azprefix + az_match.group("azbody") + " " + az_match.group("azreg") + " "
                     + az_match.group("aznumber").lstrip("0") + "/" + az_match.group("azyear") + azhessen + azregister).strip()
-            if az_match.group("azreg") in self.loaded_data["verwg_explain"]:
-                decisiontype = self.loaded_data["verwg_explain"][az_match.group("azreg")]
+
+            if "VGHH" in match.group("court"):
+                    decision_explain = self.loaded_data["verwg_explain_hamburg"][az_match.group("azreg")]
             else:
-                decisiontype = "Unbekanntes Registerzeichen!"
-            return az, decision_explain, decisiontype
+                if az_match.group("azreg") in self.loaded_data["verwg_explain"]:
+                    decision_explain = self.loaded_data["verwg_explain"][az_match.group("azreg")]
+                else:
+                    decision_explain = "Unbekanntes Registerzeichen!"
+
+            return az, decision_explain, register_explain
         else:
             raise InValidAZError("Ungültiges Aktenzeichen!")
 
     def parse_ecli_az_verwg_bayern(self, match):
         # Bayerische Az der Verwaltungsgerichte weichen vom üblichen Schema ab und haben daher eine eigene Funktion
         decision_explain = ''
+        register_explain = ''
         if az_match := re.match(pattern.verwg_az_bayern, match.group("az"), flags=re.VERBOSE):
             azregister = super().check_azpart_empty(az_match.group("azregister"))
             if azregister != '':
                 azregister = "." + azregister
-                decision_explain = self.loaded_data["verwg_register_explain"][az_match.group("azregister")]
+                register_explain = self.loaded_data["verwg_register_explain"][az_match.group("azregister")]
             az = (az_match.group("azbayern") + " " + az_match.group("azbody") + " " + az_match.group("azreg")
                     + " " + az_match.group("azyear") + "." + az_match.group("aznumber") + azregister).strip()
-            if az_match.group("azreg") in self.loaded_data["verwg_explain"]:
-                decisiontype = self.loaded_data["verwg_explain"][az_match.group("azreg")]
+            if az_match.group("azreg") in self.loaded_data["verwg_explain_bayern"]:
+                decision_explain = self.loaded_data["verwg_explain_bayern"][az_match.group("azreg")]
             else:
                 # Dies bedeutet im Zweifel keinen ungültigen ECLI, deshalb keine Exception, sondern nur
                 # Information
-                decisiontype = "Unbekanntes Registerzeichen!"
-            return az, decision_explain, decisiontype
+                decision_explain = "Unbekanntes Registerzeichen!"
+            return az, decision_explain, register_explain
         else:
             raise InValidAZError("Ungültiges Aktenzeichen!")
 
@@ -660,13 +674,13 @@ class Decision_Other(Decision):
             elif jurisdiction == "a":
                 self.court_data["az"][1], self.court_data["decision_explain"][1] = self.parse_ecli_az_arbg(match)
             elif jurisdiction == "v":
-                self.court_data["az"][1], self.court_data["decision_explain"][1], self.court_data["decisiontype"][1]\
+                self.court_data["az"][1], self.court_data["decision_explain"][1], self.court_data["register_explain"][1]\
                  = self.parse_ecli_az_verwg(match)
             elif jurisdiction == "vbay":
-                self.court_data["az"][1], self.court_data["decision_explain"][1], self.court_data["decisiontype"][1]\
+                self.court_data["az"][1], self.court_data["decision_explain"][1], self.court_data["register_explain"][1]\
                  = self.parse_ecli_az_verwg_bayern(match)
             elif jurisdiction == "f":
-                self.court_data["az"][1], self.court_data["decision_explain"][1], self.court_data["decisiontype"][1]\
+                self.court_data["az"][1], self.court_data["decision_explain"][1], self.court_data["register_explain"][1]\
                  = self.parse_ecli_az_fg(match)
             else:
                 self.court_data["az"][1] = match.group("az")
@@ -711,7 +725,7 @@ def get_input(input_file_string, batchmode=False):
     input_file_path = Path(input_file_string)
     ecli_list = []
     try:
-        with open(input_file_string, encoding="utf8") as input_file:
+        with open(input_file_path, encoding="utf8") as input_file:
             if batchmode:
                 for index, line in enumerate(input_file):
                     # Alle Zeilen, die nicht mit ECLI:DE: beginnen, werden ignoriert.
@@ -776,7 +790,10 @@ def analyse_file_batch(ecli_list, silent=False):
     return match_list
 
 def analyse_file_search(ecli_list, silent=False):
-    match_list = search_ecli(ecli_list[0][0])
+    try:
+        match_list = search_ecli(ecli_list[0][0])
+    except (NoValidECLIError, InValidAZError, InValidCourtError, UnknownAZError) as e:
+        pass
     if silent:
         pass
     else:
