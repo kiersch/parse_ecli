@@ -3,13 +3,36 @@
 [![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/)
 ![MIT License](https://img.shields.io/badge/license-MIT-lightgrey)
 
+- [parse_ecli](#parse-ecli)
+  * [Installation](#installation)
+  * [Benutzung über die Kommandozeile](#benutzung--ber-die-kommandozeile)
+    + [Optional:](#optional-)
+      - [raw-mode](#raw-mode)
+      - [Datei-Eingabe](#datei-eingabe)
+      - [Batch-Verarbeitung](#batch-verarbeitung)
+      - [Silent](#silent)
+      - [Datei-Ausgabe](#datei-ausgabe)
+  * [Nutzung als Modul](#nutzung-als-modul)
+  * [Module](#module)
+    + [ecli_classes.py](#ecli-classespy)
+  * [Überblick über ECLI](#-berblick--ber-ecli)
+    + [Umfang und Ablauf der ECLI-Erkennung](#umfang-und-ablauf-der-ecli-erkennung)
+      - [Abweichungen zu den Vorgaben des BfJ](#abweichungen-zu-den-vorgaben-des-bfj)
+    + [Umfang der Erkennung](#umfang-der-erkennung)
+    + [Ablauf der Erkennung](#ablauf-der-erkennung)
+    + [ECLI des BPatG](#ecli-des-bpatg)
+  * [Ziele](#ziele)
+  * [Tests](#tests)
 
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 Dieses Programm dient der Aufschlüsselung von deutschen ECLI wie `ECLI:DE:BVERFG:2020:RK20200501.1BVR099620`. Es kann als Modul in Python Software eingebunden oder über die Kommandozeile selbstständig aufgerufen werden.
 
 **Python 3.8** ist zwingend erforderlich.
 
-Eine webbasierte Live-Demo ist [hier](http:ecli.kiersch.org) verfügbar.
+Eine webbasierte Live-Demo ist [hier](https//:ecli.kiersch.org) verfügbar.
+
+![Screenshot](https://kiersch.org/screenshots/parse_ecli1.PNG)
 
 ## Installation
 Die Installation erfolgt am einfachsten über das [PyPi-Paket](https://pypi.org/project/parse-ecli/):
@@ -18,27 +41,58 @@ python -m pip install parse-ecli
 ```
 Je nach Betriebssystem muss `python` ggf. durch `python3` oder gar `python3.8` ersetzt werden.
 
-ALternativ kann dieses GitHub-Repo heruntergeladen werden. Die Installation erfolgt dann im Wurzelverzeichnis via
+Alternativ kann dieses GitHub-Repo heruntergeladen werden. Die Installation erfolgt dann im Wurzelverzeichnis via
 ```
 python -m pip install .
 ```
 
 ## Benutzung über die Kommandozeile
 
-Nach der Installation wird (typischerweise systemweit) der Befehl `parse-ecli` registriert. Das Programm kann dann über die Kommandozeile (Bash, CMD,Powershell etc.) direkt aufgerufen werden:
+Nach der Installation wird (typischerweise systemweit) der Befehl `parse-ecli` registriert. Das Programm kann dann über die Kommandozeile (Bash, CMD, Powershell etc.) direkt aufgerufen werden:
 
 ```
 parse-ecli <ECLI>
 ```
 Der ECLI muss vollständig eingegeben werden. Führende Leerzeichen und Sonderzeichen werden entfernt.
 
+Wird ein ECLI an `parse_ecli` übergeben, wird er nach seinen Bestandteilen aufgeschlüsselt und so weit wie möglich erläutert.
+
+So werden aus dem ECLI `ECLI:DE:AGK:2007:1120.217C180.07.00` folgende Daten ausgegeben:
+
+Feld|Wert
+---|---
+Gericht:|Amtsgericht Köln
+Entscheidungsdatum:|20.11.2007
+Aktenzeichen (max. 17 Stellen):|217 C 180/07
+Kollisionsnummer:|00
+Verfahren:|Erstinstanzliche Zivilprozesse
+
+Je nach Gerichtsbarkeit unterscheidet sich die Datendichte des ECLI. So kann aus `ECLI:DE:BVERWG:2019:170719B3BN2.18.0` folgendes extrahiert werden:
+
+Feld|Wert
+---|---
+Gericht|BVerwG
+Spruchkörper|3. Senat
+Entscheidungsdatum|17.07.2019
+Aktenzeichen (max. 17 Stellen)|3 BN 2.18
+Kollisionsnummer|0
+Entscheidungsart|Beschluss
+Verfahren|Nichtzulassungsbeschwerden in Normenkontrollverfahren
+Link|https://www.bverwg.de/de/170719B3BN2.18.0
+
 ### Optional:
 
 #### raw-mode
+![Screenshot raw-mode](https://kiersch.org/screenshots/parse_ecli2.PNG)
+
 ```
 parse-ecli -r <ECLI>
 ```
-für rawmode, d.h. die Daten werden ohne Beschriftung nur durch Semikolon getrennt ausgegeben.
+für rawmode, d.h. die Daten werden ohne Beschriftung nur durch Semikolon getrennt ausgegeben:
+
+``ECLI:DE:BVERFG:2020:RK20200501.1BVR099620;BVerfG;Kammerentscheidung (1. Senat);01.05.2020;1 BvR 996/20;Keine;Verfassungsbeschwerden;http://www.bverfg.de/e/rk20200501_1bvr099620.html;
+``
+Dies ermöglicht die automatische Weiterverarbeitung
 
 #### Datei-Eingabe
 ```
@@ -72,7 +126,7 @@ Durch Kombination der Optionen kann etwa eine Datei `input.txt` mit 100 ECLI mas
 ```
 parse-ecli -r -b -i input.txt -o output.txt
 ```
-
+![Screenshot batch](https://kiersch.org/screenshots/parse_ecli3.PNG)
 ## Nutzung als Modul
 Nach der Installation kann das Programm mittels
 ```
@@ -80,86 +134,6 @@ import parse_ecli
 ```
 in beliebige Python-Module eingebaut werden.
 
-Dabei gibt
-
-## Überblick
-
-Der Europäische Urteilsidentifikator (European Case Law Identifier – ECLI) wurde entwickelt, um die korrekte und eindeutige Angabe von Fundstellen in Entscheidungen europäischer und nationaler Gerichte zu erleichtern.
-Der ECLI ist ein einheitlicher Identifikator, der für alle Gerichte der Mitgliedstaaten und der EU dasselbe erkennbare Format besitzt. Informationen zum ECLI in Deutschland werden vom Bundesamt für Justiz als [ECLI-Koordinator](https://e-justice.europa.eu/content_european_case_law_identifier_ecli-175-de-de.do?member=1) für Deutschland bereitgestellt.
-
-Wird ein ECLI an `parse_ecli` übergeben, wird er nach seinen Bestandteilen aufgeschlüsselt und so weit wie möglich erläutert.
-
-So werden aus dem ECLI `ECLI:DE:AGK:2007:1120.217C180.07.00` folgende Daten ausgegeben:
-
-Feld|Wert
----|---
-Gericht:|Amtsgericht Köln
-Entscheidungsdatum:|20.11.2007
-Aktenzeichen (max. 17 Stellen):|217 C 180/07
-Kollisionsnummer:|00
-Verfahren:|Erstinstanzliche Zivilprozesse
-
-Je nach Gerichtsbarkeit unterscheidet sich die Datendichte des ECLI. So kann aus `ECLI:DE:BVERWG:2019:170719B3BN2.18.0` folgendes extrahiert werden:
-
-Feld|Wert
----|---
-Gericht|BVerwG
-Spruchkörper|3. Senat
-Entscheidungsdatum|17.07.2019
-Aktenzeichen (max. 17 Stellen)|3 BN 2.18
-Kollisionsnummer|0
-Entscheidungsart|Beschluss
-Verfahren|Nichtzulassungsbeschwerden in Normenkontrollverfahren
-Link|https://www.bverwg.de/de/170719B3BN2.18.0
-
-Im rawmode (`-r`) werden die einzelnen Werte nur durch ein Semikolon getrennt ausgegeben. Dies ermöglicht die automatische Weiterverwertung:
-
-``ECLI:DE:BVERFG:2020:RK20200501.1BVR099620;BVerfG;Kammerentscheidung (1. Senat);01.05.2020;1 BvR 996/20;Keine;Verfassungsbeschwerden;http://www.bverfg.de/e/rk20200501_1bvr099620.html;
-``
-
-## Umfang und Ablauf der ECLI-Erkennung
-Die Vorgaben für valide deutsche ECLI folgen grundsätzlich den Angaben des Bundesamtes für Justiz als [ECLI-Koordinator für Deutschland](https://e-justice.europa.eu/content_european_case_law_identifier_ecli-175-de-de.do?member=1). Diese sind allerdings nach Angaben des BfJ (E-Mail Auskunft, Stand Mai 2020) veraltet und auch unvollständig. So fehlt das ECLI-Schema des BPatG, dieses wurde direkt beim Gericht erfragt. Auch scheinen die Angaben auf der Website unvollständig, da sie nicht alle tatsächlich in der Praxis vergebenen ECLI erfassen. Die entsprechenden Abweichungen im Programm werden beschrieben.
-
-### Abweichungen zu den Vorgaben des BfJ
-* Das BfJ beschreibt die Kollisionsnummer der Gerichte der Länder als "zweistellig (fortlaufend von 00-99)". Tatsächlich werden in der Praxis (v.a. in Bayern) auch alphanumerische Kollisionsnummern vergeben. Sie beginnen mit `0A` statt `00`. Beispiel: `ECLI:DE:VGBAYRE:2005:0607.B1K04.1182.0A`
-* Aktenzeichen beim BVerfG enthalten nicht immer eine Senatsbezeichnung (z.B. `ECLI:DE:BVERFG:2018:VB20180322.VZ001016`)
-
-### Umfang der Erkennung
-Umfangreiche Tests (>500 ECLI) haben ergeben, dass alle validen deutschen ECLI erkannt werden dürften. False positives sind aufgrund der strengen Regex kaum denkbar. Gültige, jedoch fiktive ECLI werden freilich als gültig erkannt und ausgewertet.
-
-Die Länge der Aktenzeichen bei den Gerichten der Länder ist im ECLI auf 17 Stellen beschränkt. Bei Doppelaktenzeichen kann dies dazu führen, dass es nicht vollständig im ECLI abgebildet ist. Darauf weist das Programm bei Länder-ECLI mit einer Warnung hin.
-
-### Ablauf der Erkennung
-
-Im Code sind die ECLI-Schemata als reguläre Ausdrücke im Modul ``pattern.py`` hinterlegt.
-
-Die Analyse erfolgt zweistufig. In einem ersten Zugriff wird der ECLI mit den Mustern der verschiedenen Bundesgerichte bzw. dem der Länder verglichen. Bereits hier dürften die meisten ungültigen ECLI aussortiert werden, wobei die Muster der Bundesgerichte aufgrund der spezifischeren Vorgaben für die Bildung des ECLI strenger sind. Passt ein eingegebener ECLI auf eines der Muster, wird ein passendes Entscheidungstyp-Objekt erzeugt und in einem zweiten Schritt die für das jeweilige Gericht passende `parse_ecli`-Funktion aufgerufen. Hier wird der ECLI abschnittsweise weiter analysiert und die enthaltenen Informationen übersetzt. Bei den Gerichten der Länder wird zuvor noch eine weitere Zuordnung zur jeweiligen Fachgerichtsbarkeit vorgenommen, um die Aktenzeichen korrekt bilden zu können. Die mit den Gerichtscodes korrespondierenden Gerichte sind in `gerichte.json` hinterlegt, sie werden nur bei einem Länder-ECLI benötigt und geladen. Die Daten zu Verfahrensarten, Registerzeichen etc. sind in `decisions.json` hinterlegt.
-
-### ECLI des BPatG
-(Gemäß E-Mail-Auskunft vom 29.04.2020)
-
-Die ECLI des BPatG werden wie folgt gebildet:
-> 1. ECLI
-> 2. DE (= Ländercode)
-> 3. BPatG (= Gericht, das die Entscheidung erlassen hat)
-> 4. Jahr der Entscheidung
-> 5. Ordinalzahl (= bis zu 25 alphanumerische Zeichen inklusive Punkte).
-
-> Die Ordinalzahl soll wie folgt aufgebaut sein:
-
-> Stellen|Beschreibung|Mögliche Werte
-> ---|---|---
-> 1-6|Verkündungs-Datum
-> Zustellungs-Datum (bei Zustellung an Verkündungs Statt)|TTMMJJ
-> 7|Entscheidungstyp|B (Beschluss) U (Urteil)
-> 8-9|Spruchkörper|1…36
-> 10-14|Registerzeichen gemäß § 3 I AktOBPatG vom 11.05.2010 (runde Klammern entfallen)|Wpat Ni Li LiQ LiR ZApat ARpat
-> 15-17|Laufende Nummer|0…999
-> 18|Trennzeichen (Punkt)|.
-> 19-20|Jahreszahl|abschließende zwei Stellen des Jahres
-> 21-22|Suffix Gemäß § 3 II AktOBPatG vom 11.05.2010 (runde Klammern entfallen)|EP EU
-> 23|Trennzeichen (Punkt)|.
-> 24-25|Kollisionsziffer (stets)
 
 ## Module
 Name|Funktion
@@ -172,7 +146,7 @@ Stellt die Hauptfunktionalität des Programms zur Verfügung und kann in andere 
 
 Die Funktion `main_func` wird nur ausgeführt, wenn das Programm mit `parse-ecli` über die Kommandozeile aufgerufen wird. Hier ist die Ein-/Ausgabefunktionalität enthalten.
 
-Die Funktion `match_ecli(ecli_string)` gibt ein Entscheidungs-Objekt zurück für einen übergebenen String zurück. Erwartet wird hier ein einzelner gültiger ECLI. Die Funktion `search_ecli(ecli_string):` durchsucht einen beliebigen String nach ECLI und gibt eine Liste mit allen Entscheidungs-Objekten zurück.
+Die Funktion `match_ecli(ecli_string)` gibt ein Entscheidungs-Objekt zurück für einen übergebenen String zurück. Erwartet wird hier ein einzelner gültiger ECLI. Die Funktion `search_ecli(ecli_string)` durchsucht einen beliebigen String nach ECLI und gibt eine Liste mit allen Entscheidungs-Objekten zurück.
 
  Die Entscheidungsobjekte enthalten ein dict namens `court_data`. Dieses enthält die Daten, die aus dem ECLI extrahiert werden konnten. Jedem key ist eine Liste zugeordnet, deren erstes Feld eine Datenbeschreibung ist. Die eigentlichen Daten liegen im zweiten Feld, das leer vorinitialisiert ist.
 
@@ -196,6 +170,59 @@ output_decision(rawmode=False, output_file=None):
 Wird `rawmode` als `true` übergeben, so wird die entsprechende Ausgabe veranlasst (vgl. oben). Als `output_file` kann ein Dateiobjekt angegeben werden, sodass die Ausgabe dorthin erfolgt.
 
 
+
+
+## Überblick über ECLI
+
+Der Europäische Urteilsidentifikator (European Case Law Identifier – ECLI) wurde entwickelt, um die korrekte und eindeutige Angabe von Fundstellen in Entscheidungen europäischer und nationaler Gerichte zu erleichtern.
+Der ECLI ist ein einheitlicher Identifikator, der für alle Gerichte der Mitgliedstaaten und der EU dasselbe erkennbare Format besitzt. Einen Kurzüberblick bietet z. B. die [Website des Bundesverwaltungsgerichts](https://www.bverwg.de/rechtsprechung/ecli). 
+
+### Umfang und Ablauf der ECLI-Erkennung
+Die Vorgaben für valide deutsche ECLI folgen grundsätzlich den Angaben des Bundesamtes für Justiz als [ECLI-Koordinator für Deutschland](https://e-justice.europa.eu/content_european_case_law_identifier_ecli-175-de-de.do?member=1). Diese sind allerdings nach Angaben des BfJ (E-Mail Auskunft, Stand Mai 2020) veraltet und auch unvollständig. So fehlt das ECLI-Schema des BPatG, dieses wurde direkt beim Gericht erfragt. Auch scheinen die Angaben auf der Website unvollständig, da sie nicht alle tatsächlich in der Praxis vergebenen ECLI erfassen. Die entsprechenden Abweichungen im Programm werden beschrieben.
+
+#### Abweichungen zu den Vorgaben des BfJ
+* Das BfJ beschreibt die Kollisionsnummer der Gerichte der Länder als "zweistellig (fortlaufend von 00-99)". Tatsächlich werden in der Praxis (v.a. in Bayern) auch alphanumerische Kollisionsnummern vergeben. Sie beginnen mit `0A` statt `00`. Beispiel: `ECLI:DE:VGBAYRE:2005:0607.B1K04.1182.0A`
+* Aktenzeichen beim BVerfG enthalten nicht immer eine Senatsbezeichnung (z.B. `ECLI:DE:BVERFG:2018:VB20180322.VZ001016`)
+
+### Umfang der Erkennung
+Umfangreiche Tests (>500 ECLI) haben ergeben, dass alle validen deutschen ECLI erkannt werden dürften. False positives sind aufgrund der strengen Regex kaum denkbar. Gültige, jedoch fiktive ECLI werden freilich als gültig erkannt und ausgewertet.
+
+Die Länge der Aktenzeichen bei den Gerichten der Länder ist im ECLI auf 17 Stellen beschränkt. Bei Doppelaktenzeichen kann dies dazu führen, dass es nicht vollständig im ECLI abgebildet ist. Darauf weist das Programm bei Länder-ECLI mit einer Warnung hin.
+
+### Ablauf der Erkennung
+
+Im Code sind die ECLI-Schemata als reguläre Ausdrücke im Modul ``pattern.py`` hinterlegt.
+
+Die Analyse erfolgt zweistufig. In einem ersten Zugriff wird der ECLI mit den Mustern der verschiedenen Bundesgerichte bzw. dem der Länder verglichen. Bereits hier dürften die meisten ungültigen ECLI aussortiert werden, wobei die Muster der Bundesgerichte aufgrund der spezifischeren Vorgaben für die Bildung des ECLI strenger sind. Passt ein eingegebener ECLI auf eines der Muster, wird ein passendes Entscheidungstyp-Objekt erzeugt und in einem zweiten Schritt die für das jeweilige Gericht passende `parse_ecli`-Funktion aufgerufen. Hier wird der ECLI abschnittsweise weiter analysiert und die enthaltenen Informationen übersetzt. Bei den Gerichten der Länder wird zuvor noch eine weitere Zuordnung zur jeweiligen Fachgerichtsbarkeit vorgenommen, um die Aktenzeichen korrekt bilden zu können. Die mit den Gerichtscodes korrespondierenden Gerichte sind in `gerichte.json` hinterlegt, sie werden nur bei einem Länder-ECLI benötigt und geladen. Die Daten zu Verfahrensarten, Registerzeichen etc. sind in `decisions.json` hinterlegt.
+
+### ECLI des BPatG
+Für ECLI des BPatG finden sich noch keine Angaben beim BfJ.
+
+Die ECLI des BPatG werden wie folgt gebildet:
+
+*Gemäß E-Mail-Auskunft vom 29.04.2020*
+
+> 1. ECLI
+> 2. DE (= Ländercode)
+> 3. BPatG (= Gericht, das die Entscheidung erlassen hat)
+> 4. Jahr der Entscheidung
+> 5. Ordinalzahl (= bis zu 25 alphanumerische Zeichen inklusive Punkte).
+
+> Die Ordinalzahl soll wie folgt aufgebaut sein:
+
+> Stellen|Beschreibung|Mögliche Werte
+> ---|---|---
+> 1-6|Verkündungs-Datum
+> Zustellungs-Datum (bei Zustellung an Verkündungs Statt)|TTMMJJ
+> 7|Entscheidungstyp|B (Beschluss) U (Urteil)
+> 8-9|Spruchkörper|1…36
+> 10-14|Registerzeichen gemäß § 3 I AktOBPatG vom 11.05.2010 (runde Klammern entfallen)|Wpat Ni Li LiQ LiR ZApat ARpat
+> 15-17|Laufende Nummer|0…999
+> 18|Trennzeichen (Punkt)|.
+> 19-20|Jahreszahl|abschließende zwei Stellen des Jahres
+> 21-22|Suffix Gemäß § 3 II AktOBPatG vom 11.05.2010 (runde Klammern entfallen)|EP EU
+> 23|Trennzeichen (Punkt)|.
+> 24-25|Kollisionsziffer (stets)
 
 ## Ziele
 * Auch ausländische ECLI sollen analysiert werden können.
