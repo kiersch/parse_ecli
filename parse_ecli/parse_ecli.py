@@ -545,6 +545,8 @@ class Decision_Other(Decision):
     def parse_ecli_az_ordentliche(self, match):
         if az_match := re.match(pattern.ordentliche_az, match.group("az"), flags=re.VERBOSE):
             azprefix = super().check_azpart_empty(az_match.group("azprefix"))
+            azprefix = " ".join(re.split('(\d+)', azprefix))
+            # Im Präfix werden Ziffern und Buchstaben getrennt, Beispiel: 2OLG in ECLI:DE:OLGBAMB:2018:1130.2OLG110SS89.18.00
             azbody = super().check_azpart_empty(az_match.group("azbody"))
             azbody_sta = super().check_azpart_empty(az_match.group("azbody_sta"))
             azreg_sta = super().check_azpart_empty(az_match.group("azreg_sta"))
@@ -859,7 +861,7 @@ def main_func():
                         help='Bei Angabe einer Input-Datei wird nicht nach ECLI gesucht, sondern jede Zeile als ECLI behandelt'))
     (parser.add_argument('-s', '--silent', action='store_true',
                         help='Unterdrückt Warnungen, wenn eine Datei zum Einlesen angegeben wurde'))
-    (parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.9.4'))
+    (parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.9.5'))
     args, args2 = parser.parse_known_args()
 
 

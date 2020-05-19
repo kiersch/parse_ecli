@@ -322,6 +322,11 @@ test_court_data_laender = [
     ("ECLI:DE:AGBAYRE:2016:1109.2M2168.16.0A", ("Amtsgericht Bayreuth", "09.11.2016", "2 M 2168/16", "0A", "Zwangsvollstreckungssachen", "")),
     ("ECLI:DE:AGBEWE:2020:0108.22CC233.19.0A", ("Amtsgericht Wedding", "08.01.2020", "22c C 233/19", "0A", "Erstinstanzliche Zivilprozesse", "")),
     ("ECLI:DE:AGRE1:2020:0225.60XIV.L28.20U.00", ("Amtsgericht Recklinghausen", "25.02.2020", "60 XIV(L) 28/20 U", "00", "Unterbringungs- (§ 312 FamFG) und Freiheitsentziehungssachen (§ 415 FamFG)", "")),
+    ("ECLI:DE:LGKLE:2019:1104.110KLS204JS169.19.00", ("Landgericht Kleve", "04.11.2019", "110 KLs 204 Js 169/19", "00", "Erstinstanzliche Sachen der großen Strafkammer/Jugendkammer (§ 74 Abs. 1 GVG, § 41 JGG)", "")),
+    ("ECLI:DE:LGAC:2019:1011.60KLS806JS589.16.00", ("Landgericht Aachen", "11.10.2019", "60 KLs 806 Js 589/16", "00", "Erstinstanzliche Sachen der großen Strafkammer/Jugendkammer (§ 74 Abs. 1 GVG, § 41 JGG)", "")),
+    ("ECLI:DE:OLGBAMB:2018:1130.2OLG110SS89.18.00", ("Oberlandesgericht Bamberg", "30.11.2018", "2 OLG 110 Ss 89/18", "00", "Revisionen in Strafsachen (§ 121 Abs. 1 Nr. 1 GVG), Berufungen in Binnenschifffahrtssachen (§ 11 BinSchGerG)", "")),
+    ("ECLI:DE:OLGNUER:2012:1107.1STOLGSS258.12.0A", ("Oberlandesgericht Nürnberg", "07.11.2012", "1 St OLG Ss 258/12", "0A", "Revisionen in Strafsachen (§ 121 Abs. 1 Nr. 1 GVG), Berufungen in Binnenschifffahrtssachen (§ 11 BinSchGerG)", "")),
+    ("ECLI:DE:OLGHAM:2019:0917.32SA60.19.00", ("Oberlandesgericht Hamm", "17.09.2019", "32 SA 60/19", "00", "Gerichtsstandbestimmungsverfahren", "")),
     ("ECLI:DE:FGHH:2020:0220.2K293.15.00", ("Finanzgericht Hamburg", "20.02.2020", "2 K 293/15", "00", "", "Klagen")),
     ("ECLI:DE:KG:2020:0218.3WS.B11.20.00", ("Kammergericht", "18.02.2020", "3 Ws (B) 11/20", "00", "Beschwerden in Strafsachen und Bußgeldsachen", "")), # In Beck mit falschem Az (11/19) hinterlegt, juris korrekt
     ("ECLI:DE:LGAC:2019:1011.60KLS806JS589.16.00", ("Landgericht Aachen", "11.10.2019", "60 KLs 806 Js 589/16", "00", "Erstinstanzliche Sachen der großen Strafkammer/Jugendkammer (§ 74 Abs. 1 GVG, § 41 JGG)", "")),

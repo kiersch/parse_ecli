@@ -156,9 +156,9 @@ ordentliche = r"""
 """
 
 ordentliche_az = r"""
-    (?P<azprefix>[A-Z]{1,4}?)?? # Optional und lazy, tritt daher hinter azreg zurück
+    (?P<azprefix>[\dA-Z]{1,4}?)?? # Optional und lazy, tritt daher hinter azreg zurück
     (?P<azbody>\d{1,3})?
-    (?P<azreg>[A-Z\.]{1,5})\.?
+    (?P<azreg>[A-Z\.]{1,7})\.?
     (?P<azbody_sta>\d{1,5}(?=JS))? # Matcht nur, wenn ein JS folgt.
     (?P<azreg_sta>JS)?
     (?P<aznumber>\d{1,5})\.
