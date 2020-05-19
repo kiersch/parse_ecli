@@ -374,9 +374,12 @@ class Decision_BVerwG(Decision):
         self.court_data["decisiontype"][1] = self.loaded_data["bverwg_decisiontype"][match.group("type")]
         self.court_data["date"][1] = match.group("date")[0:2] + "." + match.group("date")[2:4] + "." + match.group("year")
         self.court_data["collision"][1] = super().check_collision(match.group("collision"))
+        azsuffix = super().check_azpart_empty(match.group("azsuffix"))
+        if azsuffix != "":
+            self.court_data["register_explain"][1] = "Rechtsschutz bei überlangen Gerichtsverfahren"
         try:
             azstring = (match.group("azbody") + " " + self.loaded_data["bverwg_az"][match.group("azreg")]
-                                            + " " + match.group("aznumber").lstrip("0") + "." + match.group("azyear"))
+                                            + " " + match.group("aznumber").lstrip("0") + "." + match.group("azyear") + " " + azsuffix)
             self.court_data["az"][1] = ' '.join(azstring.split())
             self.court_data["decision_explain"][1] = self.loaded_data["bverwg_explain"][match.group("azreg")]
         except KeyError as e:
@@ -545,7 +548,7 @@ class Decision_Other(Decision):
     def parse_ecli_az_ordentliche(self, match):
         if az_match := re.match(pattern.ordentliche_az, match.group("az"), flags=re.VERBOSE):
             azprefix = super().check_azpart_empty(az_match.group("azprefix"))
-            azprefix = " ".join(re.split('(\d+)', azprefix))
+            azprefix = " ".join(re.split(r'(\d+)', azprefix))
             # Im Präfix werden Ziffern und Buchstaben getrennt, Beispiel: 2OLG in ECLI:DE:OLGBAMB:2018:1130.2OLG110SS89.18.00
             azbody = super().check_azpart_empty(az_match.group("azbody"))
             azbody_sta = super().check_azpart_empty(az_match.group("azbody_sta"))

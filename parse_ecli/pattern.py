@@ -66,7 +66,7 @@ bpatg = r"""
 """
 
 bverwg = r"""
-     (?P<ecli>ECLI):
+    (?P<ecli>ECLI):
     (?P<country>DE):
     (?P<court>BVERWG):
     (?P<year>(?:19|20)[0-9]{2}):
@@ -76,7 +76,8 @@ bverwg = r"""
     (?P<azreg>[()A-Z]{1,11})
     (?P<aznumber>\d{1,4})\.
     (?P<azyear>\d{2})
-    (?P<azsuffix>D)?\.
+    (?P<azsuffix>D)? #Suffix bei überlangen Verfahren
+    (?(azsuffix)|\.) #Punkt entfällt bei Suffix, sonst zwingend
     (?P<collision>\d)\b
 """
 
