@@ -345,6 +345,8 @@ test_court_data_laender = [
     ("ECLI:DE:VGHH:2019:0215.9K1669.18.00", ("Verwaltungsgericht Hamburg", "15.02.2019", "9 K 1669/18", "00", "Erstinstanzliche Hauptverfahren", "")),
     ("ECLI:DE:VGK:2015:0211.33L2274.14PVB.00", ("Verwaltungsgericht Köln", "11.02.2015", "33 L 2274/14.PVB", "00", "Vorläufiger/einstweiliger Rechtsschutz", "Bundespersonalvertretungssache")),
     ("ECLI:DE:VGSTUTT:2001:0517.5K1912.01.0A",("Verwaltungsgericht Stuttgart", "17.05.2001", "5 K 1912/01", "0A", "Erstinstanzliche Hauptverfahren", "")),
+    ("ECLI:DE:VGD:2005:0517.38K1571.05BDG.00",("Verwaltungsgericht Düsseldorf", "17.05.2005", "38 K 1571/05.BDG", "00", "Erstinstanzliche Hauptverfahren", "Bundesdisziplinarsachen")),
+    ("ECLI:DE:VGGE:2013:0110.6A.L6.13A.00",("Verwaltungsgericht Gelsenkirchen", "10.01.2013", "6a L 6/13.A", "00", "Vorläufiger/einstweiliger Rechtsschutz", "Asylverfahren")),
     #("ECLI:DE:LGMAGDE:2019:0312.28QS39.19.00", ("Landgericht Magdeburg", "13.12.2019", "28 Qs 39/19", "00", "Beschwerden in Strafsachen und Bußgeldsachen (§ 73 GVG)", "")),
 ]
 

@@ -593,6 +593,8 @@ class Decision_Other(Decision):
         decision_explain = ''
         register_explain = ''
         if az_match := re.match(pattern.verwg_az, match.group("az"), flags=re.VERBOSE):
+            azbody = az_match.group("azbody")
+            azreg = az_match.group("azreg")
             azregister = super().check_azpart_empty(az_match.group("azregister"))
             if azregister != '':
                 azregister = "." + azregister
@@ -610,16 +612,23 @@ class Decision_Other(Decision):
             if azprefix != '':
                 azprefix = azprefix + " "
 
-            az = (azprefix + az_match.group("azbody") + " " + az_match.group("azreg") + " "
-                    + az_match.group("aznumber").lstrip("0") + "/" + az_match.group("azyear") + azhessen + azregister).strip()
-
             if "VGHH" in match.group("court"):
                     decision_explain = self.loaded_data["verwg_explain_hamburg"][az_match.group("azreg")]
             else:
                 if az_match.group("azreg") in self.loaded_data["verwg_explain"]:
                     decision_explain = self.loaded_data["verwg_explain"][az_match.group("azreg")]
+                elif azreg.startswith(("A", "B", "C", "D")) and azreg.replace(".","")[1:] in self.loaded_data["verwg_explain"]:
+                # Wenn dies zutrifft, haben wir es höchstwahrscheinlich mit einer Kammer mit alphanumerischer
+                # Bezeichnung zu tun wie ECLI:DE:VGGE:2013:0110.6A.L6.13A.00 (Kammer 6a)
+                    decision_explain = self.loaded_data["verwg_explain"][az_match.group("azreg").replace(".","")[1:]]
+                    azbody = azbody + azreg[0].lower()
+                    azreg = azreg.replace(".","")[1:]
                 else:
                     decision_explain = "Unbekanntes Registerzeichen!"
+
+
+            az = (azprefix + azbody + " " + azreg + " "
+                    + az_match.group("aznumber").lstrip("0") + "/" + az_match.group("azyear") + azhessen + azregister).strip()
 
             return az, decision_explain, register_explain
         else:
