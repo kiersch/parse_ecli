@@ -186,7 +186,7 @@ arbg = r"""
 
 arbg_az = r"""
     ^(?P<azbody>\d{1,2})
-    (?P<azreg>[ARBVGHCNSTLO]{1,3})
+    (?P<azreg>[A-Z]{1,4})
     (?P<aznumber>\d{1,4})\.
     (?P<azyear>\w?\d{2})$
 """
