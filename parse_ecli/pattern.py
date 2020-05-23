@@ -186,7 +186,7 @@ arbg = r"""
 
 arbg_az = r"""
     ^(?P<azbody>\d{1,2})
-    (?P<azreg>[A-Z]{1,4})
+    (?P<azreg>[A-Z]{1,6})
     (?P<aznumber>\d{1,4})\.
     (?P<azyear>\w?\d{2})$
 """
@@ -202,7 +202,7 @@ verwg_az = r"""
     (?P<aznumber>\d{1,4})\.
     (?P<azyear>\d{2})($|\.?
     (?P<azhessen>F|KS|DA|GI|WI)?\.? # Hessischer Zusatz für das jeweilige Gericht, z.B. KS für Kassel
-    (?P<azregister>A|AK|BDG|EK|G|GR|NE|PVB|PVL|S|T|U)? # Registerzusatz z.B. A für Asyl
+    (?P<azregister>A|AK|BDG|EK|G|GR|NE|O|PVB|PVL|S|T|U)? # Registerzusatz z.B. A für Asyl
     $) # End of String in der zweiten Alternative wichtig, damit "33L2274.14" in "33L2274.14PB" nicht matcht
 """
 
