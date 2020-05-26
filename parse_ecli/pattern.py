@@ -40,10 +40,10 @@ bgh = r"""
     (?P<ecli>ECLI):
     (?P<country>DE):
     (?P<court>BGH):
-    (?P<year>(?:19|20)[0-9]{2}): # Jahresbereich eingeschränkt auf 1900-2000
+    (?P<year>19[5-9][0-9]|20[0-9]{2}): # Jahresbereich eingeschränkt auf ab 1950
     (?P<date>(?:0[1-9]|[12][0-9]|3[01])(?:0[1-9]|1[012])[0-9]{2}) # Datum TTMMJJ
     (?P<type>[UBVS]) # Urteil, Beschluss etc.
-    (?P<azbody>\d|[IVX]{,4}) # Senatsbezeichnung. Straf = arabische Ziffern, Zivil = Römisch. Kann auch fehlen (zB. Kartellsachen)
+    (?P<azbody>[1-6]|[IVX]{,4}) # Senatsbezeichnung. Straf = arabische Ziffern, Zivil = Römisch. Kann auch fehlen (zB. Kartellsachen)
     (?P<azreg>[.A-Z]{2,11}) # Registerzeichen. Klammern werden im ECLI als Punkte dargestellt
     (?P<aznumber>\d{1,4})\. # Eingangsnummer
     (?P<azyear>\d{2})\.
@@ -162,9 +162,8 @@ ordentliche_az = r"""
     (?P<azreg>[A-Z\.]{1,7})\.?
     (?P<azbody_sta>\d{1,5}(?=JS))? # Matcht nur, wenn ein JS folgt.
     (?P<azreg_sta>JS)?
-    (?P<aznumber>\d{1,5})\.
-    (?P<azyear>\d{1,2})
-    (?P<azsuffix>[A-Z]{1,5})?
+    (?P<aznumber>\d{1,5})(?(azreg_sta)\.?(?P<azyear1>\d{1,2})?\.?|\.(?P<azyear>\d{1,2})\.?) #Wenn JS, dann ist der Punkt entbehrlich
+    (?P<azsuffix>[\dA-Z]{1,6})?$
 """
 
 sozg = r"""

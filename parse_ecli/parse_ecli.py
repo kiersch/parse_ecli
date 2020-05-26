@@ -555,6 +555,11 @@ class Decision_Other(Decision):
             azreg_sta = super().check_azpart_empty(az_match.group("azreg_sta"))
             if azreg_sta != '':
                 azreg_sta = self.loaded_data["ordentliche_az"][azreg_sta]
+            
+            if azreg_sta != '':
+                azyear = super().check_azpart_empty(az_match.group("azyear1"))
+            else:
+                azyear = az_match.group("azyear")
             azsuffix = super().check_azpart_empty(az_match.group("azsuffix"))
             azreg = az_match.group("azreg")
 
@@ -579,8 +584,8 @@ class Decision_Other(Decision):
             else:
                 decision_explain = "Unbekanntes Registerzeichen!"
             az = (azprefix + " " + azbody + " " + azreg
-                    + " " + azbody_sta + " " + azreg_sta + " "  + az_match.group("aznumber").lstrip("0") + "/" + az_match.group("azyear")
-                    + " " + azsuffix).strip() # Strip bezieht sich auf den gesamten String, der az zugewiesen wird!
+                    + " " + azbody_sta + " " + azreg_sta + " "  + az_match.group("aznumber").lstrip("0") + "/" + azyear
+                    + " " + azsuffix).strip(" /") # Strip bezieht sich auf den gesamten String, der az zugewiesen wird!
             az = re.sub(r"\s\s+" , " ", az)
 
 
