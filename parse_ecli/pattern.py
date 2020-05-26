@@ -131,7 +131,7 @@ laender = r"""
     (?P<court>\w{2,7}):
     (?P<year>(?:19|20)[0-9]{2}):
     (?P<date>(?:0[1-9]|1[012])(?:0[1-9]|[12][0-9]|3[01]))\.
-    (?P<az>[\dA-Z\.]{2,15}\.[\dA-Z]{1,15})\.
+    (?P<az>[\.\dA-Z]{4,17})\.
     (?P<collision>[\dA-Z]{2})\b
 """
 
@@ -164,6 +164,10 @@ ordentliche_az = r"""
     (?P<azreg_sta>JS)?
     (?P<aznumber>\d{1,5})(?(azreg_sta)\.?(?P<azyear1>\d{1,2})?\.?|\.(?P<azyear>\d{1,2})\.?) #Wenn JS, dann ist der Punkt entbehrlich
     (?P<azsuffix>[\dA-Z]{1,6})?$
+"""
+ordentliche_az_register = r""" # Für Handels-, Vereinsregister etc. 
+(?P<azreg>HR(A|B)?|PR|GN?R|PR|VR)
+(?P<aznum>[\d]{1,8})$
 """
 
 sozg = r"""

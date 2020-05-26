@@ -16,41 +16,42 @@ def match_ecli(ecli_string):
 
     ecli_string = ecli_string.upper().strip(' .:/()\n')
 
-    if (match := re.match(pattern.laender_compiled, ecli_string)) is not None:
+    if (match := re.fullmatch(pattern.laender_compiled, ecli_string)) is not None:
         decision = Decision_Other(ecli_string)
         decision.parse_ecli(match)
         return decision
 
-    elif (match := re.match(pattern.bgh_compiled, ecli_string)) is not None:
+    elif (match := re.fullmatch(pattern.bgh_compiled, ecli_string)) is not None:
         decision = Decision_BGH(ecli_string)
         decision.parse_ecli(match)
         return decision
-    elif (match := re.match(pattern.bverfg_compiled, ecli_string)) is not None:
+
+    elif (match := re.fullmatch(pattern.bverfg_compiled, ecli_string)) is not None:
         decision = Decision_BVerfG(ecli_string)
         decision.parse_ecli(match)
         return decision
 
-    elif (match := re.match(pattern.bverwg_compiled, ecli_string)) is not None:
+    elif (match := re.fullmatch(pattern.bverwg_compiled, ecli_string)) is not None:
         decision = Decision_BVerwG(ecli_string)
         decision.parse_ecli(match)
         return decision
 
-    elif (match := re.match(pattern.bag_compiled, ecli_string)) is not None:
+    elif (match := re.fullmatch(pattern.bag_compiled, ecli_string)) is not None:
         decision = Decision_BAG(ecli_string)
         decision.parse_ecli(match)
         return decision
 
-    elif (match := re.match(pattern.bsg_compiled, ecli_string)) is not None:
+    elif (match := re.fullmatch(pattern.bsg_compiled, ecli_string)) is not None:
         decision = Decision_BSG(ecli_string)
         decision.parse_ecli(match)
         return decision
 
-    elif (match := re.match(pattern.bfh_compiled, ecli_string)) is not None:
+    elif (match := re.fullmatch(pattern.bfh_compiled, ecli_string)) is not None:
         decision = Decision_BFH(ecli_string)
         decision.parse_ecli(match)
         return decision
 
-    elif (match := re.match(pattern.bpatg_compiled, ecli_string)) is not None:
+    elif (match := re.fullmatch(pattern.bpatg_compiled, ecli_string)) is not None:
         decision = Decision_BPatG(ecli_string)
         decision.parse_ecli(match)
         return decision
@@ -587,8 +588,10 @@ class Decision_Other(Decision):
                     + " " + azbody_sta + " " + azreg_sta + " "  + az_match.group("aznumber").lstrip("0") + "/" + azyear
                     + " " + azsuffix).strip(" /") # Strip bezieht sich auf den gesamten String, der az zugewiesen wird!
             az = re.sub(r"\s\s+" , " ", az)
-
-
+            return az, decision_explain
+        elif az_match := re.match(pattern.ordentliche_az_register, match.group("az"), flags=re.VERBOSE):
+            az = az_match.group("azreg") + " " + az_match.group("aznum")
+            decision_explain = self.loaded_data["ordentliche_explain"][az_match.group("azreg").replace(".","")]
             return az, decision_explain
         else:
             raise InValidAZError("Ungültiges Aktenzeichen!")
