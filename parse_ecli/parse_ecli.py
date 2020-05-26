@@ -590,7 +590,9 @@ class Decision_Other(Decision):
             az = re.sub(r"\s\s+" , " ", az)
             return az, decision_explain
         elif az_match := re.match(pattern.ordentliche_az_register, match.group("az"), flags=re.VERBOSE):
-            az = az_match.group("azreg") + " " + az_match.group("aznum")
+            azbody = super().check_azpart_empty(az_match.group("azbody"))
+            az = (azbody + " " + az_match.group("azreg") + " " + az_match.group("aznum")).strip()
+            az = re.sub(r"\s\s+" , " ", az)
             decision_explain = self.loaded_data["ordentliche_explain"][az_match.group("azreg").replace(".","")]
             return az, decision_explain
         else:

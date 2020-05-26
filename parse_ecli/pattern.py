@@ -166,8 +166,9 @@ ordentliche_az = r"""
     (?P<azsuffix>[\dA-Z]{1,6})?$
 """
 ordentliche_az_register = r""" # Für Handels-, Vereinsregister etc. 
-(?P<azreg>HR(A|B)?|PR|GN?R|PR|VR)
-(?P<aznum>[\d]{1,8})$
+    (?P<azbody>\d{1,3})?
+    (?P<azreg>HR(A|B)?|PR|GN?R|PR|VR)
+    (?P<aznum>[\d]{1,8})$
 """
 
 sozg = r"""
