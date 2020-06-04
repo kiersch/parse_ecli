@@ -4,6 +4,7 @@ import json
 import re
 import argparse
 import sys
+import warnings
 from pathlib import Path
 from parse_ecli import pattern
 
@@ -562,6 +563,11 @@ class Decision_Other(Decision):
             else:
                 azyear = az_match.group("azyear")
             azsuffix = super().check_azpart_empty(az_match.group("azsuffix"))
+            if az_match.group("azseparator") == ".":
+                azsuffix = " ".join(re.split(r'(\d+)', azsuffix)) + "[...]"
+            elif az_match.group("azseparator") == "UND":
+                azsuffix = "und " + " ".join(re.split(r'(\d+)', azsuffix.replace(".","/"))) + "[...]"
+
             azreg = az_match.group("azreg")
 
             if azreg.replace(".","") in self.loaded_data["ordentliche_az"]:
@@ -590,6 +596,7 @@ class Decision_Other(Decision):
             az = re.sub(r"\s\s+" , " ", az)
             return az, decision_explain
         elif az_match := re.match(pattern.ordentliche_az_register, match.group("az"), flags=re.VERBOSE):
+            # Für Registerentscheidungen, z.B. ECLI:DE:AGFREIB:2015:0427.PR700066.0A
             azbody = super().check_azpart_empty(az_match.group("azbody"))
             az = (azbody + " " + az_match.group("azreg") + " " + az_match.group("aznum")).strip()
             az = re.sub(r"\s\s+" , " ", az)
@@ -710,8 +717,8 @@ class Decision_Other(Decision):
                 self.court_data["az"][1] = match.group("az")
         except (NoValidECLIError, InValidAZError, InValidCourtError) as e:
             if jurisdiction == "o":
-                self.court_data["az"][1], self.court_data["decision_explain"][1] = match.group("az"), ""
-                raise UnknownAZError("Aktenzeichen konnte nicht analysiert werden und wird unverändert aus ECLI übernommen")
+                self.court_data["az"][1], self.court_data["decision_explain"][1] = " ".join(re.split(r'(\d+)', match.group("az"))), ""
+                warnings.warn("Aktenzeichen konnte nicht analysiert werden und wird unverändert aus ECLI übernommen")
             else:
                 raise e
 
@@ -864,6 +871,9 @@ def commandline_mode(ecli_string, output_file, raw=False):
             my_decision.output_decision(raw)
     except (NoValidECLIError, InValidAZError, InValidCourtError) as e:
         exception_print(e)
+    except (UnknownAZError) as e:
+        print(e)
+        pass
 
 
 

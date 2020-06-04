@@ -335,7 +335,7 @@ test_court_data_laender = [
     ("ECLI:DE:LGAC:2019:1011.60KLS806JS589.16.00", ("Landgericht Aachen", "11.10.2019", "60 KLs 806 Js 589/16", "00", "Erstinstanzliche Sachen der großen Strafkammer/Jugendkammer (§ 74 Abs. 1 GVG, § 41 JGG)", "")),
     ("ECLI:DE:LGD:2019:0808.4CO88.17.0A", ("Landgericht Düsseldorf", "08.08.2019", "4c O 88/17", "0A", "Erstinstanzliche Zivilprozesse (gewöhnliche Prozesse, Arreste und einstweilige Verfügungen; § 71 GVG)", "")),
     ("ECLI:DE:LGLUENE:2015:0226.33KLS.760JS44594.0A", ("Landgericht Lüneburg", "26.02.2015", "33 KLs 760 Js 44594", "0A", "Erstinstanzliche Sachen der großen Strafkammer/Jugendkammer (§ 74 Abs. 1 GVG, § 41 JGG)", "")),
-    ("ECLI:DE:OLGMUEN:2020:0128.31WX229.19.31WX23.0A", ("Oberlandesgericht München", "28.01.2020", "31 WX 229/19 31WX23", "0A", "Weitere Beschwerde in Verfahren der freiwilligen Gerichtsbarkeit", "")),
+    ("ECLI:DE:OLGMUEN:2020:0128.31WX229.19.31WX23.0A", ("Oberlandesgericht München", "28.01.2020", "31 Wx 229/19 31 WX 23 [...]", "0A", "Weitere Beschwerde in Verfahren der freiwilligen Gerichtsbarkeit", "")),
     ("ECLI:DE:AGFREIB:2015:0427.PR700066.0A", ("Amtsgericht Freiburg im Breisgau", "27.04.2015", "PR 700066", "0A", "Partnerschaftsregister (PartGG)", "")),
     ("ECLI:DE:AGE1:2016:0419.90PR2335.00", ("Amtsgericht Essen", "19.04.2016", "90 PR 2335", "00", "Partnerschaftsregister (PartGG)", "")),
     ("ECLI:DE:LSGNRW:2019:1216.L8BA4.18B.ER.00", ("Landessozialgericht Nordrhein-Westfalen", "16.12.2019", "L 8 BA 4/18 B ER", "00", "Anfrageverfahren nach § 7a SGB IV sowie der Betriebsprüfungen nach §§ 28p und 28q SGB IV", "")),

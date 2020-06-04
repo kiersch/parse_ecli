@@ -162,9 +162,12 @@ ordentliche_az = r"""
     (?P<azreg>[A-Z\.]{1,7})\.?
     (?P<azbody_sta>\d{1,5}(?=JS))? # Matcht nur, wenn ein JS folgt.
     (?P<azreg_sta>JS)?
-    (?P<aznumber>\d{1,5})(?(azreg_sta)\.?(?P<azyear1>\d{1,2})?\.?|\.(?P<azyear>\d{1,2})\.?) #Wenn JS, dann ist der Punkt entbehrlich
-    (?P<azsuffix>[\dA-Z]{1,6})?$
+    (?P<aznumber>\d{1,5})
+    (?(azreg_sta)\.?(?P<azyear1>\d{1,2})?\.?|\.(?P<azyear>\d{1,2})) #Wenn JS, dann ist der Punkt entbehrlich
+    (?P<azseparator>(\.|UND))?
+    (?P<azsuffix>[\.\dA-Z]{1,7})?$
 """
+
 ordentliche_az_register = r""" # Für Handels-, Vereinsregister etc. 
     (?P<azbody>\d{1,3})?
     (?P<azreg>HR(A|B)?|PR|GN?R|PR|VR)
