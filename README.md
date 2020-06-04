@@ -1,5 +1,5 @@
 # parse_ecli
-![Version 0.9.4](https://img.shields.io/badge/version-0.9.4-green)
+![Version 0.9.5](https://img.shields.io/badge/version-0.9.5-green)
 [![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/)
 ![MIT License](https://img.shields.io/badge/license-MIT-lightgrey)
 
@@ -185,9 +185,14 @@ Die Vorgaben für valide deutsche ECLI folgen grundsätzlich den Angaben des Bun
 * Aktenzeichen beim BVerfG enthalten nicht immer eine Senatsbezeichnung (z.B. `ECLI:DE:BVERFG:2018:VB20180322.VZ001016`)
 
 ### Umfang der Erkennung
-Umfangreiche Tests (>500 ECLI) haben ergeben, dass alle validen deutschen ECLI erkannt werden dürften. False positives sind aufgrund der strengen Regex kaum denkbar. Gültige, jedoch fiktive ECLI werden freilich als gültig erkannt und ausgewertet.
+Umfangreiche Tests (>1500 ECLI) haben ergeben, dass alle validen deutschen ECLI erkannt werden dürften. False positives sind aufgrund der strengen Regex kaum denkbar. Gültige, jedoch fiktive ECLI werden freilich als gültig erkannt und ausgewertet.
 
 Die Länge der Aktenzeichen bei den Gerichten der Länder ist im ECLI auf 17 Stellen beschränkt. Bei Doppelaktenzeichen kann dies dazu führen, dass es nicht vollständig im ECLI abgebildet ist. Darauf weist das Programm bei Länder-ECLI mit einer Warnung hin.
+
+Beispiel für ein Mehrfachaktenzeichen: 
+* ECLI: `ECLI:DE:OLGMUEN:2020:0128.31WX229.19.31WX23.0A`
+* Vollständige Aktenzeichen in Beck-Online: `31 Wx 229/19, 31 Wx 230/19, 31 Wx 231/19`
+* Ausgabe Aktenzeichen: `31 Wx 229/19 31 WX 23 [...]`
 
 ### Ablauf der Erkennung
 
