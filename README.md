@@ -4,6 +4,7 @@
 ![MIT License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 - [parse_ecli](#parse-ecli)
+  * [Änderungen](#Änderungen)
   * [Installation](#installation)
   * [Benutzung über die Kommandozeile](#benutzung--ber-die-kommandozeile)
     + [Optional:](#optional-)
@@ -33,6 +34,15 @@ Dieses Programm dient der Aufschlüsselung von deutschen ECLI wie `ECLI:DE:BVERF
 Eine webbasierte Live-Demo ist [hier](https//:ecli.kiersch.org) verfügbar.
 
 ![Screenshot](https://kiersch.org/screenshots/parse_ecli1.PNG)
+
+## Änderungen
+Neu in Version `0.9.5`
+* Handels-, Insolvenz- und andere Register werden erfasst
+* Alphanumerische Kammerbezeichnungen (4a Kammer) werden erfasst
+* Optionaler Punkt nach Präfix bei AZ der Ordentlichen Gerichtsbarkeit ist nun zulässig
+* Das Suffix D (Überlange Verfahren) wird beim BVerwG erkannt
+* Lokale Registerzeichen (SA für Gerichtsstandsbestimmungen beim OLG Hamm), St OLG SS (für Revisionen in Strafsachen beim OLG Nürnberg), diverse weitere Registerzeichen hinzugefügt
+* Detailanpassungen der Regex-Muster
 
 ## Installation
 Die Installation erfolgt am einfachsten über das [PyPi-Paket](https://pypi.org/project/parse-ecli/):
